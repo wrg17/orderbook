@@ -1,0 +1,7 @@
+services:
+  orderbook-test:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: test
+    image: orderbook-test
