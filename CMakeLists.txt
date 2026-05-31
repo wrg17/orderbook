@@ -9,6 +9,7 @@ project(orderbook
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(ORDERBOOK_BUILD_TESTS "Build tests" ON)
 option(ORDERBOOK_WARNINGS_AS_ERRORS "Treat warnings as errors" OFF)
@@ -30,7 +31,7 @@ target_compile_features(orderbook_core PUBLIC cxx_std_20)
 target_compile_options(orderbook_core PRIVATE -Wall -Wextra -Wpedantic)
 if (ORDERBOOK_WARNINGS_AS_ERRORS)
     target_compile_options(orderbook_core PRIVATE -Werror)
-endif()
+endif ()
 
 add_executable(orderbook_cli
         apps/cli/main.cpp
@@ -59,4 +60,4 @@ if (ORDERBOOK_BUILD_TESTS)
 
     include(GoogleTest)
     gtest_discover_tests(orderbook_tests)
-endif()
+endif ()

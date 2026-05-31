@@ -1,6 +1,14 @@
 # Prerequisites
 *.d
 
+# Build
+cmake-build-*
+build/
+
+# IDE / OS
+.idea/
+.DS_Store
+
 # Compiled Object files
 *.slo
 *.lo
