@@ -1,4 +1,4 @@
-FROM ubuntu:24.04 AS builder
+FROM ubuntu:24.04 AS toolchain
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -6,12 +6,15 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     ninja-build \
+    gdb \
     git \
     curl \
     zip \
     unzip \
     pkg-config \
     ca-certificates \
+    clang-format \
+    clang-tidy \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -19,18 +22,19 @@ WORKDIR /app
 COPY extern/vcpkg /app/extern/vcpkg
 RUN /app/extern/vcpkg/bootstrap-vcpkg.sh
 
-COPY vcpkg.json /app/vcpkg.json
-COPY CMakeLists.txt CMakePresets.json /app/
-COPY include /app/include
-COPY src /app/src
-COPY tests /app/tests
-COPY apps /app/apps
+FROM toolchain AS builder
+
+WORKDIR /app
+
+COPY . /app
+RUN /app/extern/vcpkg/bootstrap-vcpkg.sh
 
 RUN cmake --preset ci
 RUN cmake --build --preset ci
 
+
 FROM builder AS test
-RUN ctest --preset ci
+RUN ctest --preset ci --output-on-failure
 
 FROM ubuntu:24.04 AS runtime
 

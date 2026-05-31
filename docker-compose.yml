@@ -1,7 +1,10 @@
 services:
-  orderbook-test:
+  orderbook-dev:
+    image: orderbook-toolchain:latest
     build:
       context: .
       dockerfile: docker/Dockerfile
-      target: test
-    image: orderbook-test
+      target: toolchain
+    volumes:
+      - .:/app
+    working_dir: /app

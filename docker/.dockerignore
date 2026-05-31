@@ -1,0 +1,7 @@
+extern/vcpkg/vcpkg
+extern/vcpkg/vcpkg.exe
+extern/vcpkg/buildtrees
+extern/vcpkg/packages
+extern/vcpkg/downloads
+vcpkg_installed
+build
