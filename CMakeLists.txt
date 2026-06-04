@@ -14,11 +14,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(ORDERBOOK_BUILD_TESTS "Build tests" ON)
 option(ORDERBOOK_WARNINGS_AS_ERRORS "Treat warnings as errors" OFF)
 
+file(GLOB_RECURSE SRC CONFIGURE_DEPENDS "src/*.cpp")
 add_library(orderbook_core
-        src/core/order_book.cpp
-        src/core/matching_engine.cpp
-        src/domain/order.cpp
-        src/domain/trade.cpp
+        ${SRC}
 )
 
 target_include_directories(orderbook_core
@@ -47,17 +45,23 @@ if (ORDERBOOK_BUILD_TESTS)
 
     find_package(GTest CONFIG REQUIRED)
 
-    add_executable(orderbook_tests
-            tests/unit/test_order_book.cpp
-            tests/unit/test_matching_engine.cpp
-    )
+    #file(GLOB_RECURSE INTEGRATION_TESTS CONFIGURE_DEPENDS "tests/integration/*.integration.test.cpp")
+    #add_executable(orderbook_integration_tests ${INTEGRATION_TESTS})
+    #target_link_libraries(orderbook_integration_tests
+    #        PRIVATE
+    #        orderbook_core
+    #        GTest::gtest_main
+    #)
 
-    target_link_libraries(orderbook_tests
+    file(GLOB_RECURSE UNIT_TESTS CONFIGURE_DEPENDS "tests/unit/*.unit.test.cpp")
+    add_executable(orderbook_unit_tests ${UNIT_TESTS})
+    target_link_libraries(orderbook_unit_tests
             PRIVATE
             orderbook_core
             GTest::gtest_main
     )
 
     include(GoogleTest)
-    gtest_discover_tests(orderbook_tests)
+    #gtest_discover_tests(orderbook_integration_tests)
+    gtest_discover_tests(orderbook_unit_tests)
 endif ()
