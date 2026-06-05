@@ -5,13 +5,13 @@
 #include <orderbook/domain/order.hpp>
 
 Order::Order(Side side, Quantity quantity, Ticker ticker, Price price)
-    : id_(OrderId{++id_seq_}), side_(side), quantity_(quantity), ticker_(ticker), price_(price) {}
+    : id_(OrderId{++id_seq}), side_(side), quantity_(quantity), ticker_(ticker), price_(price) {}
 
 OrderId Order::getId() const {
     return id_;
 }
 
-Order::Side Order::getSide() const {
+Side Order::getSide() const {
     return side_;
 }
 

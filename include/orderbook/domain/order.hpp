@@ -13,6 +13,8 @@ struct OrderId {
     constexpr auto operator<=>(const OrderId&) const = default;
 };
 
+enum class Side : std::uint8_t { BUY, SELL };
+
 struct Quantity {
     std::uint32_t value;
     constexpr auto operator<=>(const Quantity&) const = default;
@@ -31,8 +33,6 @@ struct Price {
 
 class Order {
 public:
-    enum class Side : std::uint8_t { BUY, SELL };
-
     Order(Side side, Quantity quantity, Ticker ticker, Price price);
     ~Order() = default;
 
@@ -43,7 +43,7 @@ public:
     [[nodiscard]] Price getPrice() const;
 
 private:
-    inline static std::atomic<std::uint64_t> id_seq_ = 0;
+    inline static std::atomic<std::uint64_t> id_seq = 0;
 
     OrderId id_;
     Side side_;

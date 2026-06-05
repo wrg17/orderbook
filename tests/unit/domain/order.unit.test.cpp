@@ -10,29 +10,29 @@ constexpr Ticker kDefaultTicker{1};
 constexpr Price kDefaultPrice{1000};
 
 TEST(Order, BasicConstructorBuyLimit) {
-    const Order order{Order::Side::BUY, kDefaultQuantity, kDefaultTicker, kDefaultPrice};
+    const Order kOrder{Side::BUY, kDefaultQuantity, kDefaultTicker, kDefaultPrice};
 
-    EXPECT_EQ(order.getSide(), Order::Side::BUY);
-    EXPECT_EQ(order.getQuantity(), kDefaultQuantity);
-    EXPECT_EQ(order.getTicker(), kDefaultTicker);
-    EXPECT_EQ(order.getPrice(), kDefaultPrice);
+    EXPECT_EQ(kOrder.getSide(), Side::BUY);
+    EXPECT_EQ(kOrder.getQuantity(), kDefaultQuantity);
+    EXPECT_EQ(kOrder.getTicker(), kDefaultTicker);
+    EXPECT_EQ(kOrder.getPrice(), kDefaultPrice);
 }
 
 TEST(Order, BasicConstructorSellLimit) {
-    const Order order{Order::Side::SELL, kDefaultQuantity, kDefaultTicker, kDefaultPrice};
+    const Order kOrder{Side::SELL, kDefaultQuantity, kDefaultTicker, kDefaultPrice};
 
-    EXPECT_EQ(order.getSide(), Order::Side::SELL);
-    EXPECT_EQ(order.getQuantity(), kDefaultQuantity);
-    EXPECT_EQ(order.getTicker(), kDefaultTicker);
-    EXPECT_EQ(order.getPrice(), kDefaultPrice);
+    EXPECT_EQ(kOrder.getSide(), Side::SELL);
+    EXPECT_EQ(kOrder.getQuantity(), kDefaultQuantity);
+    EXPECT_EQ(kOrder.getTicker(), kDefaultTicker);
+    EXPECT_EQ(kOrder.getPrice(), kDefaultPrice);
 }
 
 TEST(Order, IdsAreUniqueAcrossMultipleOrders) {
-    const Order a{Order::Side::BUY, kDefaultQuantity, kDefaultTicker, kDefaultPrice};
-    const Order b{Order::Side::SELL, kDefaultQuantity, kDefaultTicker, kDefaultPrice};
-    const Order c{Order::Side::BUY, kDefaultQuantity, kDefaultTicker, kDefaultPrice};
+    const Order kA{Side::BUY, kDefaultQuantity, kDefaultTicker, kDefaultPrice};
+    const Order kB{Side::SELL, kDefaultQuantity, kDefaultTicker, kDefaultPrice};
+    const Order kC{Side::BUY, kDefaultQuantity, kDefaultTicker, kDefaultPrice};
 
-    EXPECT_NE(a.getId(), b.getId());
-    EXPECT_NE(b.getId(), c.getId());
-    EXPECT_NE(a.getId(), c.getId());
+    EXPECT_NE(kA.getId(), kB.getId());
+    EXPECT_NE(kB.getId(), kC.getId());
+    EXPECT_NE(kA.getId(), kC.getId());
 }
