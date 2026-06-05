@@ -8,6 +8,11 @@
 #include <compare>
 #include <cstdint>
 
+struct OrderId {
+    std::uint64_t value;
+    constexpr auto operator<=>(const OrderId&) const = default;
+};
+
 struct Quantity {
     std::uint32_t value;
     constexpr auto operator<=>(const Quantity&) const = default;
@@ -31,16 +36,16 @@ public:
     Order(Side side, Quantity quantity, Ticker ticker, Price price);
     ~Order() = default;
 
-    [[nodiscard]] std::uint64_t getId() const;
+    [[nodiscard]] OrderId getId() const;
     [[nodiscard]] Side getSide() const;
     [[nodiscard]] Quantity getQuantity() const;
     [[nodiscard]] Ticker getTicker() const;
     [[nodiscard]] Price getPrice() const;
 
 private:
-    inline static std::atomic<std::uint64_t> count_ = 0;
+    inline static std::atomic<std::uint64_t> id_seq_ = 0;
 
-    std::uint64_t id_;
+    OrderId id_;
     Side side_;
     Quantity quantity_;
     Ticker ticker_;
