@@ -20,7 +20,6 @@ class Trade {
 public:
     Trade(OrderId maker, OrderId taker, Side side, Ticker ticker, Price price, Quantity quantity,
           std::chrono::system_clock::time_point time);
-    ~Trade() = default;
 
     [[nodiscard]] TradeId getId() const;
 
@@ -62,6 +61,8 @@ template <> struct std::formatter<TradeId> : std::formatter<std::uint64_t> {
 };
 
 template <> struct std::formatter<Trade> {
-    constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
-    std::format_context::iterator format(const Trade& trade, std::format_context& ctx) const;
+    static constexpr auto parse(const std::format_parse_context& ctx) {
+        return ctx.begin();
+    }
+    static std::format_context::iterator format(const Trade& trade, std::format_context& ctx);
 };

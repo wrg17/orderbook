@@ -7,7 +7,7 @@
 
 Trade::Trade(OrderId maker, OrderId taker, Side side, Ticker ticker, Price price, Quantity quantity,
              std::chrono::system_clock::time_point time)
-    : id_(++id_seq), maker_order_id_(maker), taker_order_id_(taker), taker_side_(side),
+    : id_(TradeId{++id_seq}), maker_order_id_(maker), taker_order_id_(taker), taker_side_(side),
       ticker_(ticker), price_(price), quantity_(quantity), time_(time) {}
 
 TradeId Trade::getId() const {
@@ -52,10 +52,9 @@ std::format_context::iterator std::formatter<TradeId>::format(TradeId id,
 }
 
 std::format_context::iterator std::formatter<Trade>::format(const Trade& trade,
-                                                            std::format_context& ctx) const {
+                                                            std::format_context& ctx) {
     return std::format_to(
-        ctx.out(),
-        "Trade(Id:{},Maker:{},Taker:{},Side:{},Ticker:{},Price:{},Quantity:{},Time:{})",
+        ctx.out(), "Trade(Id:{},Maker:{},Taker:{},Side:{},Ticker:{},Price:{},Quantity:{},Time:{})",
         trade.getId(), trade.getMakerOrderId(), trade.getTakerOrderId(), trade.getTakerSide(),
         trade.getTicker(), trade.getPrice(), trade.getQuantity(),
         trade.getTime().time_since_epoch().count());
