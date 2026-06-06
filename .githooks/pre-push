@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Runs the same checks as CI before allowing a push. Mirrors .github/workflows/ci.yml.
+# Skip with: git push --no-verify (use sparingly).
+set -euo pipefail
+
+if ! command -v docker >/dev/null 2>&1; then
+  echo "pre-push: docker not found in PATH — cannot run checks" >&2
+  exit 1
+fi
+
+if ! docker info >/dev/null 2>&1; then
+  echo "pre-push: docker daemon not reachable — start it (e.g. 'colima start') and retry" >&2
+  exit 1
+fi
+
+echo "==> pre-push: format, lint, test"
+docker compose run --rm orderbook-dev bash -c '
+  scripts/format-check.sh && \
+  scripts/lint.sh && \
+  scripts/test.sh
+'
+echo "==> pre-push: ok"
