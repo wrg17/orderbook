@@ -11,10 +11,6 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "==> pre-push: format, lint, test"
-docker compose run --rm orderbook-dev bash -c '
-  scripts/format-check.sh && \
-  scripts/lint.sh && \
-  scripts/test.sh
-'
+echo "==> pre-push: make verify"
+make verify
 echo "==> pre-push: ok"

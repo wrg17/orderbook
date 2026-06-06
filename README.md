@@ -29,15 +29,21 @@ Re-running it is safe — every step is idempotent.
 
 ## Local development
 
-Anything CI does, you can do locally with the same command:
+Use `make` as the entry point — every target wraps the dockerized script so you don't have to remember the
+`docker compose` invocation. Run `make` (or `make help`) for the list:
 
 ```bash
-docker compose run --rm orderbook-dev bash scripts/format-check.sh   # clang-format
-docker compose run --rm orderbook-dev bash scripts/lint.sh           # clang-tidy
-docker compose run --rm orderbook-dev bash scripts/test.sh           # build + ctest
+make format        # apply clang-format in-place
+make format-check  # verify formatting (no changes)
+make lint          # clang-tidy (strict — warnings are errors)
+make build         # configure + build
+make test          # build + ctest
+make verify        # format-check + lint + test (same as the pre-push hook)
+make shell         # open a bash shell inside the dev container
+make clean         # remove the build directory
 ```
 
 ## Pre-push hook
 
-`scripts/init.sh` points `core.hooksPath` at `.githooks/`, which makes `git push` run the three checks above first — so
-what passes locally passes in CI. To bypass for a WIP branch, use `git push --no-verify`.
+`scripts/init.sh` points `core.hooksPath` at `.githooks/`, so `git push` runs `make verify` first — what passes locally
+passes in CI. To bypass for a WIP branch, use `git push --no-verify`.
