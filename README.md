@@ -18,11 +18,11 @@ Inside the container (built from `docker/Dockerfile`):
 
 ## Setup
 
-Run the init script once after cloning. It verifies the host tooling, marks the helper scripts executable, and enables
-the pre-push hook:
+Run `make init` once after cloning. It verifies the host tooling, marks the helper scripts executable, and enables the
+pre-push hook:
 
 ```bash
-./scripts/init.sh
+make init
 ```
 
 Re-running it is safe — every step is idempotent.
@@ -45,5 +45,5 @@ make clean         # remove the build directory
 
 ## Pre-push hook
 
-`scripts/init.sh` points `core.hooksPath` at `.githooks/`, so `git push` runs `make verify` first — what passes locally
-passes in CI. To bypass for a WIP branch, use `git push --no-verify`.
+`make init` points `core.hooksPath` at `.githooks/`, so `git push` runs `make verify` first — what passes locally passes
+in CI. To bypass for a WIP branch, use `git push --no-verify`.
