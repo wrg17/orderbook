@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
-# Runs the same checks as CI before allowing a push. Mirrors .github/workflows/ci.yml.
-# Skip with: git push --no-verify (use sparingly).
 set -euo pipefail
 
 if ! command -v docker >/dev/null 2>&1; then
-  echo "pre-push: docker not found in PATH — cannot run checks" >&2
+  echo "pre-push: docker not found in PATH" >&2
   exit 1
 fi
 
 if ! docker info >/dev/null 2>&1; then
-  echo "pre-push: docker daemon not reachable — start it (e.g. 'colima start') and retry" >&2
+  echo "pre-push: docker daemon not reachable" >&2
   exit 1
 fi
 
