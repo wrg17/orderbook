@@ -37,7 +37,6 @@ struct Price {
 class Order {
 public:
     Order(Side side, Quantity quantity, Ticker ticker, Price price);
-    ~Order() = default;
 
     [[nodiscard]] OrderId getId() const;
     [[nodiscard]] Side getSide() const;
@@ -78,6 +77,9 @@ template <> struct std::formatter<Price> : std::formatter<std::uint64_t> {
 };
 
 template <> struct std::formatter<Order> {
-    constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
-    std::format_context::iterator format(const Order& order, std::format_context& ctx) const;
+    static constexpr std::format_parse_context::const_iterator
+    parse(const std::format_parse_context& ctx) {
+        return ctx.begin();
+    }
+    static std::format_context::iterator format(const Order& order, std::format_context& ctx);
 };
