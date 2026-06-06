@@ -43,10 +43,10 @@ TEST(Trade, BasicOStreamBuySide) {
     std::stringstream ss;
     ss << trade;
 
-    const auto expected = std::format(
-        "Trade:{},Maker:{},Taker:{},Side:{},Ticker:{},Price:{},Quantity:{},Time:{}",
-        trade.getId().value, kMakerOrderId.value, kTakerOrderId.value, "BUY", kTicker.value,
-        kPrice.value, kQuantity.value, kTime.time_since_epoch().count());
+    const auto expected =
+        std::format("Trade(Id:{},Maker:{},Taker:{},Side:{},Ticker:{},Price:{},Quantity:{},Time:{})",
+                    trade.getId(), kMakerOrderId.value, kTakerOrderId.value, "BUY", kTicker.value,
+                    kPrice.value, kQuantity.value, kTime.time_since_epoch().count());
     EXPECT_EQ(ss.str(), expected);
 }
 
@@ -55,9 +55,23 @@ TEST(Trade, BasicOStreamSellSide) {
     std::stringstream ss;
     ss << trade;
 
-    const auto expected = std::format(
-        "Trade:{},Maker:{},Taker:{},Side:{},Ticker:{},Price:{},Quantity:{},Time:{}",
-        trade.getId().value, kMakerOrderId.value, kTakerOrderId.value, "SELL", kTicker.value,
-        kPrice.value, kQuantity.value, kTime.time_since_epoch().count());
+    const auto expected =
+        std::format("Trade(Id:{},Maker:{},Taker:{},Side:{},Ticker:{},Price:{},Quantity:{},Time:{})",
+                    trade.getId(), kMakerOrderId.value, kTakerOrderId.value, "SELL", kTicker.value,
+                    kPrice.value, kQuantity.value, kTime.time_since_epoch().count());
     EXPECT_EQ(ss.str(), expected);
+}
+
+TEST(TradeId, FormatsValue) {
+    EXPECT_EQ(std::format("{}", TradeId{42}), "42");
+}
+
+TEST(Trade, FormatsAllFields) {
+    const Trade trade{kMakerOrderId, kTakerOrderId, Side::BUY, kTicker, kPrice, kQuantity, kTime};
+
+    const auto expected = std::format(
+        "Trade(Id:{},Maker:{},Taker:{},Side:BUY,Ticker:{},Price:{},Quantity:{},Time:{})",
+        trade.getId().value, kMakerOrderId.value, kTakerOrderId.value, kTicker.value, kPrice.value,
+        kQuantity.value, kTime.time_since_epoch().count());
+    EXPECT_EQ(std::format("{}", trade), expected);
 }

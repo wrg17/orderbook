@@ -7,12 +7,13 @@
 #include <atomic>
 #include <chrono>
 #include <compare>
+#include <format>
 #include <iosfwd>
 #include <orderbook/domain/order.hpp>
 
 struct TradeId {
     std::uint64_t value;
-    constexpr auto operator<=>(const TradeId&) const = default;
+    constexpr std::strong_ordering operator<=>(const TradeId&) const = default;
 };
 
 class Trade {
@@ -55,3 +56,12 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const Trade& trade);
+
+template <> struct std::formatter<TradeId> : std::formatter<std::uint64_t> {
+    std::format_context::iterator format(TradeId id, std::format_context& ctx) const;
+};
+
+template <> struct std::formatter<Trade> {
+    constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
+    std::format_context::iterator format(const Trade& trade, std::format_context& ctx) const;
+};

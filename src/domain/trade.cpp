@@ -43,10 +43,20 @@ std::chrono::system_clock::time_point Trade::getTime() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Trade& trade) {
-    const char* side = trade.getTakerSide() == Side::BUY ? "BUY" : "SELL";
-    return os << std::format(
-               "Trade(Id:{},Maker:{},Taker:{},Side:{},Ticker:{},Price:{},Quantity:{},Time:{})",
-               trade.getId().value, trade.getMakerOrderId().value, trade.getTakerOrderId().value,
-               side, trade.getTicker().value, trade.getPrice().value, trade.getQuantity().value,
-               trade.getTime().time_since_epoch().count());
+    return os << std::format("{}", trade);
+}
+
+std::format_context::iterator std::formatter<TradeId>::format(TradeId id,
+                                                              std::format_context& ctx) const {
+    return std::formatter<std::uint64_t>::format(id.value, ctx);
+}
+
+std::format_context::iterator std::formatter<Trade>::format(const Trade& trade,
+                                                            std::format_context& ctx) const {
+    return std::format_to(
+        ctx.out(),
+        "Trade(Id:{},Maker:{},Taker:{},Side:{},Ticker:{},Price:{},Quantity:{},Time:{})",
+        trade.getId(), trade.getMakerOrderId(), trade.getTakerOrderId(), trade.getTakerSide(),
+        trade.getTicker(), trade.getPrice(), trade.getQuantity(),
+        trade.getTime().time_since_epoch().count());
 }

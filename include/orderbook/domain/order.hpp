@@ -7,28 +7,31 @@
 #include <atomic>
 #include <compare>
 #include <cstdint>
+#include <format>
+#include <iosfwd>
+#include <string_view>
 
 struct OrderId {
     std::uint64_t value;
-    constexpr auto operator<=>(const OrderId&) const = default;
+    constexpr std::strong_ordering operator<=>(const OrderId&) const = default;
 };
 
 enum class Side : std::uint8_t { BUY, SELL };
 
 struct Quantity {
     std::uint32_t value;
-    constexpr auto operator<=>(const Quantity&) const = default;
+    constexpr std::strong_ordering operator<=>(const Quantity&) const = default;
 };
 
 struct Ticker {
     std::uint16_t value;
-    constexpr auto operator<=>(const Ticker&) const = default;
+    constexpr std::strong_ordering operator<=>(const Ticker&) const = default;
 };
 
 // Stored in 1/1000 of a currency unit (1000 == $1.00).
 struct Price {
     std::uint64_t value;
-    constexpr auto operator<=>(const Price&) const = default;
+    constexpr std::strong_ordering operator<=>(const Price&) const = default;
 };
 
 class Order {
@@ -50,4 +53,31 @@ private:
     Quantity quantity_;
     Ticker ticker_;
     Price price_;
+};
+
+std::ostream& operator<<(std::ostream& os, const Order& order);
+
+template <> struct std::formatter<OrderId> : std::formatter<std::uint64_t> {
+    std::format_context::iterator format(OrderId id, std::format_context& ctx) const;
+};
+
+template <> struct std::formatter<Side> : std::formatter<std::string_view> {
+    std::format_context::iterator format(Side s, std::format_context& ctx) const;
+};
+
+template <> struct std::formatter<Quantity> : std::formatter<std::uint32_t> {
+    std::format_context::iterator format(Quantity quantity, std::format_context& ctx) const;
+};
+
+template <> struct std::formatter<Ticker> : std::formatter<std::uint16_t> {
+    std::format_context::iterator format(Ticker ticker, std::format_context& ctx) const;
+};
+
+template <> struct std::formatter<Price> : std::formatter<std::uint64_t> {
+    std::format_context::iterator format(Price price, std::format_context& ctx) const;
+};
+
+template <> struct std::formatter<Order> {
+    constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
+    std::format_context::iterator format(const Order& order, std::format_context& ctx) const;
 };
