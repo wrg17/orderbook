@@ -16,50 +16,50 @@ constexpr Quantity kQuantity{1};
 constexpr std::chrono::system_clock::time_point kTime{};
 
 TEST(Trade, BasicConstructor) {
-    const Trade trade{kMakerOrderId, kTakerOrderId, kTakerSide, kTicker, kPrice, kQuantity, kTime};
+    const Trade kTrade{kMakerOrderId, kTakerOrderId, kTakerSide, kTicker, kPrice, kQuantity, kTime};
 
-    EXPECT_NE(trade.getId(), TradeId{});
-    EXPECT_EQ(trade.getMakerOrderId(), kMakerOrderId);
-    EXPECT_EQ(trade.getTakerOrderId(), kTakerOrderId);
-    EXPECT_EQ(trade.getTakerSide(), kTakerSide);
-    EXPECT_EQ(trade.getTicker(), kTicker);
-    EXPECT_EQ(trade.getPrice(), kPrice);
-    EXPECT_EQ(trade.getQuantity(), kQuantity);
-    EXPECT_EQ(trade.getTime().time_since_epoch().count(), kTime.time_since_epoch().count());
+    EXPECT_NE(kTrade.getId(), TradeId{});
+    EXPECT_EQ(kTrade.getMakerOrderId(), kMakerOrderId);
+    EXPECT_EQ(kTrade.getTakerOrderId(), kTakerOrderId);
+    EXPECT_EQ(kTrade.getTakerSide(), kTakerSide);
+    EXPECT_EQ(kTrade.getTicker(), kTicker);
+    EXPECT_EQ(kTrade.getPrice(), kPrice);
+    EXPECT_EQ(kTrade.getQuantity(), kQuantity);
+    EXPECT_EQ(kTrade.getTime().time_since_epoch().count(), kTime.time_since_epoch().count());
 }
 
 TEST(Trade, IdsAreUniqueAcrossMultipleTrades) {
-    const Trade a{kMakerOrderId, kTakerOrderId, kTakerSide, kTicker, kPrice, kQuantity, kTime};
-    const Trade b{kMakerOrderId, kTakerOrderId, kTakerSide, kTicker, kPrice, kQuantity, kTime};
-    const Trade c{kMakerOrderId, kTakerOrderId, kTakerSide, kTicker, kPrice, kQuantity, kTime};
+    const Trade kA{kMakerOrderId, kTakerOrderId, kTakerSide, kTicker, kPrice, kQuantity, kTime};
+    const Trade kB{kMakerOrderId, kTakerOrderId, kTakerSide, kTicker, kPrice, kQuantity, kTime};
+    const Trade kC{kMakerOrderId, kTakerOrderId, kTakerSide, kTicker, kPrice, kQuantity, kTime};
 
-    EXPECT_NE(a.getId(), b.getId());
-    EXPECT_NE(b.getId(), c.getId());
-    EXPECT_NE(a.getId(), c.getId());
+    EXPECT_NE(kA.getId(), kB.getId());
+    EXPECT_NE(kB.getId(), kC.getId());
+    EXPECT_NE(kA.getId(), kC.getId());
 }
 
 TEST(Trade, BasicOStreamBuySide) {
-    const Trade trade{kMakerOrderId, kTakerOrderId, Side::BUY, kTicker, kPrice, kQuantity, kTime};
+    const Trade kTrade{kMakerOrderId, kTakerOrderId, Side::BUY, kTicker, kPrice, kQuantity, kTime};
     std::stringstream ss;
-    ss << trade;
+    ss << kTrade;
 
-    const auto expected =
+    const auto kExpected =
         std::format("Trade(Id:{},Maker:{},Taker:{},Side:{},Ticker:{},Price:{},Quantity:{},Time:{})",
-                    trade.getId(), kMakerOrderId.value, kTakerOrderId.value, "BUY", kTicker.value,
+                    kTrade.getId(), kMakerOrderId.value, kTakerOrderId.value, "BUY", kTicker.value,
                     kPrice.value, kQuantity.value, kTime.time_since_epoch().count());
-    EXPECT_EQ(ss.str(), expected);
+    EXPECT_EQ(ss.str(), kExpected);
 }
 
 TEST(Trade, BasicOStreamSellSide) {
-    const Trade trade{kMakerOrderId, kTakerOrderId, Side::SELL, kTicker, kPrice, kQuantity, kTime};
+    const Trade kTrade{kMakerOrderId, kTakerOrderId, Side::SELL, kTicker, kPrice, kQuantity, kTime};
     std::stringstream ss;
-    ss << trade;
+    ss << kTrade;
 
-    const auto expected =
+    const auto kExpected =
         std::format("Trade(Id:{},Maker:{},Taker:{},Side:{},Ticker:{},Price:{},Quantity:{},Time:{})",
-                    trade.getId(), kMakerOrderId.value, kTakerOrderId.value, "SELL", kTicker.value,
+                    kTrade.getId(), kMakerOrderId.value, kTakerOrderId.value, "SELL", kTicker.value,
                     kPrice.value, kQuantity.value, kTime.time_since_epoch().count());
-    EXPECT_EQ(ss.str(), expected);
+    EXPECT_EQ(ss.str(), kExpected);
 }
 
 TEST(TradeId, FormatsValue) {
@@ -67,11 +67,11 @@ TEST(TradeId, FormatsValue) {
 }
 
 TEST(Trade, FormatsAllFields) {
-    const Trade trade{kMakerOrderId, kTakerOrderId, Side::BUY, kTicker, kPrice, kQuantity, kTime};
+    const Trade kTrade{kMakerOrderId, kTakerOrderId, Side::BUY, kTicker, kPrice, kQuantity, kTime};
 
-    const auto expected = std::format(
+    const auto kExpected = std::format(
         "Trade(Id:{},Maker:{},Taker:{},Side:BUY,Ticker:{},Price:{},Quantity:{},Time:{})",
-        trade.getId().value, kMakerOrderId.value, kTakerOrderId.value, kTicker.value, kPrice.value,
+        kTrade.getId().value, kMakerOrderId.value, kTakerOrderId.value, kTicker.value, kPrice.value,
         kQuantity.value, kTime.time_since_epoch().count());
-    EXPECT_EQ(std::format("{}", trade), expected);
+    EXPECT_EQ(std::format("{}", kTrade), kExpected);
 }

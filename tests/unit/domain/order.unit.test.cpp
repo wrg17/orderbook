@@ -66,10 +66,10 @@ TEST(Price, FormatsValue) {
 TEST(Order, FormatsAllFields) {
     const Order kOrder{Side::BUY, kDefaultQuantity, kDefaultTicker, kDefaultPrice};
 
-    const auto expected =
+    const auto kExpected =
         std::format("Order(Id:{},Side:BUY,Quantity:{},Ticker:{},Price:{})", kOrder.getId().value,
                     kDefaultQuantity.value, kDefaultTicker.value, kDefaultPrice.value);
-    EXPECT_EQ(std::format("{}", kOrder), expected);
+    EXPECT_EQ(std::format("{}", kOrder), kExpected);
 }
 
 TEST(Order, OStream) {
