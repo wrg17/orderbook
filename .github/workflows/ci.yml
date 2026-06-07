@@ -26,23 +26,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
-
-      - name: Build test image
-        run: docker compose build orderbook-test
-
-      - name: Run tests
-        run: docker compose up --abort-on-container-exit --exit-code-from orderbook-test orderbook-test
-
-      - name: Show container logs on failure
-        if: failure()
-        run: docker compose logs
-
-      - name: Tear down containers
-        if: always()
-        run: docker compose down -v
+      - run: docker compose run --rm orderbook-dev bash scripts/test.sh

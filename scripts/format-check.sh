@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-find src include apps tests \
-  -type f \( -name '*.cpp' -o -name '*.hpp' \) \
-  -print0 | xargs -0 clang-format --dry-run --Werror
+files=$(find src include apps tests \
+  -type f \( -name '*.cpp' -o -name '*.hpp' \))
+
+count=$(echo "$files" | wc -l | tr -d ' ')
+echo "Checking format on $count files..."
+
+echo "$files" | xargs clang-format --dry-run --Werror
+
+echo "Format check passed."
