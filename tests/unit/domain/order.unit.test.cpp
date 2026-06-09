@@ -55,6 +55,31 @@ TEST(Quantity, FormatsValue) {
     EXPECT_EQ(std::format("{}", Quantity{100}), "100");
 }
 
+constexpr Quantity kQuantityLhs{10};
+constexpr Quantity kQuantityRhs{3};
+constexpr Quantity kQuantityDifference{7};
+constexpr Quantity kQuantitySum{13};
+
+TEST(Quantity, MinusEqualsSubtracts) {
+    Quantity q = kQuantityLhs;
+    q -= kQuantityRhs;
+    EXPECT_EQ(q, kQuantityDifference);
+}
+
+TEST(Quantity, PlusEqualsAdds) {
+    Quantity q = kQuantityLhs;
+    q += kQuantityRhs;
+    EXPECT_EQ(q, kQuantitySum);
+}
+
+TEST(Quantity, MinusReturnsDifference) {
+    EXPECT_EQ(kQuantityLhs - kQuantityRhs, kQuantityDifference);
+}
+
+TEST(Quantity, PlusReturnsSum) {
+    EXPECT_EQ(kQuantityLhs + kQuantityRhs, kQuantitySum);
+}
+
 TEST(Ticker, FormatsValue) {
     EXPECT_EQ(std::format("{}", Ticker{555}), "555");
 }

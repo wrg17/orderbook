@@ -20,8 +20,27 @@ enum class Side : std::uint8_t { BUY, SELL };
 
 struct Quantity {
     std::uint32_t value;
+
     constexpr std::strong_ordering operator<=>(const Quantity&) const = default;
+
+    constexpr Quantity& operator-=(Quantity other) {
+        value -= other.value;
+        return *this;
+    }
+
+    constexpr Quantity& operator+=(Quantity other) {
+        value += other.value;
+        return *this;
+    }
 };
+
+constexpr Quantity operator-(Quantity lhs, Quantity rhs) {
+    return lhs -= rhs;
+}
+
+constexpr Quantity operator+(Quantity lhs, Quantity rhs) {
+    return lhs += rhs;
+}
 
 struct Ticker {
     std::uint16_t value;
