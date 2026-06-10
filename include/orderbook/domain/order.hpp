@@ -92,6 +92,12 @@ template <> struct std::formatter<OrderId> : std::formatter<std::uint64_t> {
     std::format_context::iterator format(OrderId id, std::format_context& ctx) const;
 };
 
+template <> struct std::hash<OrderId> {
+    std::size_t operator()(OrderId id) const noexcept {
+        return std::hash<std::uint64_t>{}(id.value);
+    }
+};
+
 template <> struct std::formatter<Side> : std::formatter<std::string_view> {
     std::format_context::iterator format(Side s, std::format_context& ctx) const;
 };
