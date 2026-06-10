@@ -32,6 +32,11 @@ struct Quantity {
         value += other.value;
         return *this;
     }
+
+    constexpr Quantity& operator*=(std::uint32_t scalar) {
+        value *= scalar;
+        return *this;
+    }
 };
 
 constexpr Quantity operator-(Quantity lhs, Quantity rhs) {
@@ -40,6 +45,14 @@ constexpr Quantity operator-(Quantity lhs, Quantity rhs) {
 
 constexpr Quantity operator+(Quantity lhs, Quantity rhs) {
     return lhs += rhs;
+}
+
+constexpr Quantity operator*(Quantity lhs, std::uint32_t scalar) {
+    return lhs *= scalar;
+}
+
+constexpr Quantity operator*(std::uint32_t scalar, Quantity rhs) {
+    return rhs *= scalar;
 }
 
 struct Ticker {

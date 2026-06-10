@@ -55,6 +55,9 @@ TEST(Quantity, FormatsValue) {
     EXPECT_EQ(std::format("{}", Quantity{100}), "100");
 }
 
+constexpr Quantity kQuantityProduct{30};
+constexpr std::uint32_t kScalar = 3;
+
 constexpr Quantity kQuantityLhs{10};
 constexpr Quantity kQuantityRhs{3};
 constexpr Quantity kQuantityDifference{7};
@@ -78,6 +81,18 @@ TEST(Quantity, MinusReturnsDifference) {
 
 TEST(Quantity, PlusReturnsSum) {
     EXPECT_EQ(kQuantityLhs + kQuantityRhs, kQuantitySum);
+}
+
+TEST(Quantity, StarEqualsMultiplies) {
+    Quantity q = kQuantityLhs;
+    q *= kScalar;
+    EXPECT_EQ(q, kQuantityProduct);
+}
+TEST(Quantity, ScalarTimesQuantityReturnsProduct) {
+    EXPECT_EQ(kScalar * kQuantityLhs, kQuantityProduct);
+}
+TEST(Quantity, QuantityTimesScalarReturnsProduct) {
+    EXPECT_EQ(kQuantityLhs * kScalar, kQuantityProduct);
 }
 
 TEST(Ticker, FormatsValue) {
