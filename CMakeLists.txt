@@ -44,6 +44,10 @@ if (ORDERBOOK_BUILD_TESTS)
     enable_testing()
 
     find_package(GTest CONFIG REQUIRED)
+    set_target_properties(
+        GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
+        PROPERTIES SYSTEM TRUE
+    )
 
     #file(GLOB_RECURSE INTEGRATION_TESTS CONFIGURE_DEPENDS "tests/integration/*.integration.test.cpp")
     #add_executable(orderbook_integration_tests ${INTEGRATION_TESTS})

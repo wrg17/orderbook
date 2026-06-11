@@ -14,7 +14,7 @@ help:
 	@echo "  lint          Run clang-tidy (strict: warnings are errors)"
 	@echo "  build         Configure and build (CI preset)"
 	@echo "  test          Build and run unit tests"
-	@echo "  verify        format-check + lint + test (what the pre-push hook runs)"
+	@echo "  verify        format-check + diff-only lint + test (fast local pass; CI runs full lint)"
 	@echo "  shell         Open a bash shell inside the dev container"
 	@echo "  clean         Remove the build directory"
 
@@ -37,7 +37,7 @@ test:
 	$(COMPOSE_RUN) scripts/test.sh
 
 verify:
-	$(COMPOSE_RUN) -c 'scripts/format-check.sh && scripts/lint.sh && scripts/test.sh'
+	./scripts/verify.sh
 
 shell:
 	docker compose run --rm orderbook-dev bash

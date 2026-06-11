@@ -4,6 +4,7 @@
 # Build
 cmake-build-*
 build/
+.cache/
 
 # IDE / OS
 .idea/

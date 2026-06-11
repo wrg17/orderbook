@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cmake --preset ci
+SKIP_CONFIGURE=0
+for arg in "$@"; do
+  case "$arg" in
+    --no-configure) SKIP_CONFIGURE=1 ;;
+  esac
+done
+
+if [[ $SKIP_CONFIGURE -eq 0 ]]; then
+  cmake --preset ci
+fi
 
 find src apps tests \
   -type f \( -name '*.cpp' -o -name '*.hpp' \) \
