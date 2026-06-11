@@ -76,6 +76,10 @@ void PriceLevel::erase(RestingOrder& order) noexcept {
 
 RestingOrder::RestingOrder(OrderId id, Quantity quantity) noexcept : id_(id), quantity_(quantity) {}
 
+RestingOrder::~RestingOrder() noexcept {
+    assert(level_ == nullptr && next_ == nullptr && prev_ == nullptr);
+}
+
 OrderId RestingOrder::getId() const noexcept {
     return id_;
 }

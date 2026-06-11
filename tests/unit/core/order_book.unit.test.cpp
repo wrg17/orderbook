@@ -1,5 +1,46 @@
-#include <gtest/gtest.h>
+//
+// Created by Will George on 3/22/26.
+//
 
-TEST(OrderBookSmokeTest, TrueIsTrue) {
-    EXPECT_TRUE(true);
+#include <gtest/gtest.h>
+#include <orderbook/core/order_book.hpp>
+
+constexpr Ticker kTicker{1};
+constexpr Price kMatchPrice{1'0000};
+
+const Order kBuy{Side::BUY, Quantity{1}, kTicker, kMatchPrice};
+const Order kSell{Side::SELL, Quantity{1}, kTicker, kMatchPrice};
+
+TEST(OrderBook, ConstructorBasic) {
+    const OrderBook kOrderBook{kTicker};
+
+    EXPECT_EQ(kOrderBook.getTicker(), kTicker);
+}
+
+TEST(OrderBook, GetBestBidWhenEmpty) {
+    const OrderBook kOrderBook{kTicker};
+
+    EXPECT_EQ(kOrderBook.getBestBid(), std::nullopt);
+}
+
+TEST(OrderBook, GetBestAskWhenEmpty) {
+    const OrderBook kOrderBook{kTicker};
+
+    EXPECT_EQ(kOrderBook.getBestAsk(), std::nullopt);
+}
+
+TEST(OrderBook, AddBasicOrdersToBids) {
+    OrderBook order_book{kTicker};
+    order_book.add(kBuy);
+
+    EXPECT_EQ(order_book.getBestAsk(), std::nullopt);
+    EXPECT_EQ(order_book.getBestBid(), kMatchPrice);
+}
+
+TEST(OrderBook, AddBasicOrdersToAsks) {
+    OrderBook order_book{kTicker};
+    order_book.add(kSell);
+
+    EXPECT_EQ(order_book.getBestAsk(), kMatchPrice);
+    EXPECT_EQ(order_book.getBestBid(), std::nullopt);
 }

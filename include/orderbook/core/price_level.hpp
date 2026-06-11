@@ -41,6 +41,7 @@ private:
 class RestingOrder {
 public:
     RestingOrder(OrderId id, Quantity quantity) noexcept;
+    ~RestingOrder() noexcept;
 
     RestingOrder(const RestingOrder& other) = delete;
     RestingOrder(RestingOrder&& other) = delete;
