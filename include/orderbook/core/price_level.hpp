@@ -6,37 +6,7 @@
 
 #include <orderbook/domain/order.hpp>
 
-class RestingOrder;
-
-class PriceLevel {
-public:
-    PriceLevel() noexcept = default;
-
-    PriceLevel(const PriceLevel& other) = delete;
-    PriceLevel(PriceLevel&& other) = delete;
-
-    PriceLevel& operator=(const PriceLevel& other) = delete;
-    PriceLevel& operator=(const PriceLevel&& other) = delete;
-
-    [[nodiscard]] bool empty() const noexcept;
-
-    [[nodiscard]] RestingOrder* getFront() const noexcept;
-
-    [[nodiscard]] Quantity getTotalQuantity() const noexcept;
-
-    [[nodiscard]] std::size_t getOrderCount() const noexcept;
-
-    void pushBack(RestingOrder& order) noexcept;
-    void erase(RestingOrder& order) noexcept;
-
-private:
-    friend class RestingOrder;
-
-    Quantity total_quantity_{};
-    std::size_t order_count_ = 0;
-    RestingOrder* front_ = nullptr;
-    RestingOrder* back_ = nullptr;
-};
+class PriceLevel;
 
 class RestingOrder {
 public:
@@ -58,6 +28,8 @@ public:
 
     [[nodiscard]] Quantity getQuantity() const noexcept;
 
+    void unlink() noexcept;
+
     void reduce(Quantity reduction) noexcept;
 
 private:
@@ -69,4 +41,33 @@ private:
     RestingOrder* next_ = nullptr;
     RestingOrder* prev_ = nullptr;
     PriceLevel* level_ = nullptr;
+};
+
+class PriceLevel {
+public:
+    PriceLevel() noexcept;
+    ~PriceLevel() noexcept;
+
+    PriceLevel(const PriceLevel& other) = delete;
+    PriceLevel(PriceLevel&& other) = delete;
+
+    PriceLevel& operator=(const PriceLevel& other) = delete;
+    PriceLevel& operator=(const PriceLevel&& other) = delete;
+
+    [[nodiscard]] bool empty() const noexcept;
+
+    [[nodiscard]] RestingOrder* getFront() const noexcept;
+
+    [[nodiscard]] Quantity getTotalQuantity() const noexcept;
+
+    [[nodiscard]] std::size_t getOrderCount() const noexcept;
+
+    void pushBack(RestingOrder& order) noexcept;
+
+private:
+    friend class RestingOrder;
+
+    std::size_t order_count_;
+    Quantity total_quantity_;
+    RestingOrder sentinel_;
 };

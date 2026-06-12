@@ -9,8 +9,8 @@ OrderBook::OrderBook(Ticker ticker) noexcept : ticker_(ticker) {}
 
 OrderBook::~OrderBook() noexcept {
     for (auto& order_ptr : orders_ | std::views::values) {
-        if (PriceLevel* level = order_ptr->getLevel(); level != nullptr) {
-            level->erase(*order_ptr);
+        if (order_ptr->getLevel() != nullptr) {
+            order_ptr->unlink();
         }
     }
 }

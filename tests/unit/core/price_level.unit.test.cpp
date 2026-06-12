@@ -95,17 +95,17 @@ TEST_F(PriceLevelTest, PushBackIncrementsOrderCount) {
     ASSERT_EQ(level_.getOrderCount(), kThreeOrders);
 }
 
-TEST_F(PriceLevelTest, EraseOnlyOrderRestoresEmpty) {
+TEST_F(PriceLevelTest, UnlinkOnlyOrderRestoresEmpty) {
     ASSERT_TRUE(level_.empty());
 
     level_.pushBack(first_order_);
     ASSERT_FALSE(level_.empty());
 
-    level_.erase(first_order_);
+    first_order_.unlink();
     ASSERT_TRUE(level_.empty());
 }
 
-TEST_F(PriceLevelTest, EraseFromFrontSequentially) {
+TEST_F(PriceLevelTest, UnlinkFromFrontSequentially) {
     ASSERT_TRUE(level_.empty());
     ASSERT_EQ(level_.getOrderCount(), kZeroOrders);
     ASSERT_EQ(level_.getTotalQuantity(), kZeroQuantity);
@@ -126,23 +126,23 @@ TEST_F(PriceLevelTest, EraseFromFrontSequentially) {
     ASSERT_EQ(level_.getTotalQuantity(), 3U * kQuantity);
     ASSERT_EQ(level_.getFront(), &first_order_);
 
-    level_.erase(first_order_);
+    first_order_.unlink();
     ASSERT_EQ(level_.getOrderCount(), kTwoOrders);
     ASSERT_EQ(level_.getTotalQuantity(), 2U * kQuantity);
     ASSERT_EQ(level_.getFront(), &second_order_);
 
-    level_.erase(second_order_);
+    second_order_.unlink();
     ASSERT_EQ(level_.getOrderCount(), kOneOrder);
     ASSERT_EQ(level_.getTotalQuantity(), kQuantity);
     ASSERT_EQ(level_.getFront(), &third_order_);
 
-    level_.erase(third_order_);
+    third_order_.unlink();
     ASSERT_EQ(level_.getOrderCount(), kZeroOrders);
     ASSERT_EQ(level_.getTotalQuantity(), kZeroQuantity);
     ASSERT_EQ(level_.getFront(), nullptr);
 }
 
-TEST_F(PriceLevelTest, EraseMiddleKeepsListWalkable) {
+TEST_F(PriceLevelTest, UnlinkMiddleKeepsListWalkable) {
     ASSERT_TRUE(level_.empty());
 
     level_.pushBack(first_order_);
@@ -157,15 +157,15 @@ TEST_F(PriceLevelTest, EraseMiddleKeepsListWalkable) {
     ASSERT_EQ(level_.getOrderCount(), kThreeOrders);
     ASSERT_EQ(level_.getFront(), &first_order_);
 
-    level_.erase(second_order_);
+    second_order_.unlink();
     ASSERT_EQ(level_.getOrderCount(), kTwoOrders);
     ASSERT_EQ(level_.getFront(), &first_order_);
 
-    level_.erase(first_order_);
+    first_order_.unlink();
     ASSERT_EQ(level_.getOrderCount(), kOneOrder);
     ASSERT_EQ(level_.getFront(), &third_order_);
 
-    level_.erase(third_order_);
+    third_order_.unlink();
     ASSERT_EQ(level_.getOrderCount(), kZeroOrders);
     ASSERT_EQ(level_.getFront(), nullptr);
 }
@@ -192,31 +192,31 @@ TEST_F(PriceLevelTest, PushBackLinksNextAndPrev) {
     EXPECT_EQ(third_order_.getNext(), nullptr);
 }
 
-TEST_F(PriceLevelTest, EraseMiddleSplicesFrontAndBack) {
+TEST_F(PriceLevelTest, UnlinkMiddleSplicesFrontAndBack) {
     level_.pushBack(first_order_);
     level_.pushBack(second_order_);
     level_.pushBack(third_order_);
 
-    level_.erase(second_order_);
+    second_order_.unlink();
 
     EXPECT_EQ(first_order_.getNext(), &third_order_);
     EXPECT_EQ(third_order_.getPrev(), &first_order_);
 }
 
-TEST_F(PriceLevelTest, EraseNullsOrderLevel) {
+TEST_F(PriceLevelTest, UnlinkNullsOrderLevel) {
     level_.pushBack(first_order_);
     ASSERT_EQ(first_order_.getLevel(), &level_);
 
-    level_.erase(first_order_);
+    first_order_.unlink();
     ASSERT_EQ(first_order_.getLevel(), nullptr);
 }
 
-TEST_F(PriceLevelTest, EraseNullsOrderNeighbors) {
+TEST_F(PriceLevelTest, UnlinkNullsOrderNeighbors) {
     level_.pushBack(first_order_);
     level_.pushBack(second_order_);
     level_.pushBack(third_order_);
 
-    level_.erase(second_order_);
+    second_order_.unlink();
 
     EXPECT_EQ(second_order_.getNext(), nullptr);
     EXPECT_EQ(second_order_.getPrev(), nullptr);
@@ -238,13 +238,13 @@ TEST_F(PriceLevelTest, ReduceUpdatesLevelTotal) {
     ASSERT_EQ(level_.getTotalQuantity(), kQuantity - kReduction);
 }
 
-TEST_F(PriceLevelTest, ReduceThenEraseLeavesTotalAtZero) {
+TEST_F(PriceLevelTest, ReduceThenUnlinkLeavesTotalAtZero) {
     level_.pushBack(first_order_);
     ASSERT_EQ(level_.getTotalQuantity(), kQuantity);
 
     first_order_.reduce(kReduction);
     ASSERT_EQ(level_.getTotalQuantity(), kQuantity - kReduction);
 
-    level_.erase(first_order_);
+    first_order_.unlink();
     ASSERT_EQ(level_.getTotalQuantity(), kZeroQuantity);
 }
