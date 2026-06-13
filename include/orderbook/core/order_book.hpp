@@ -21,6 +21,8 @@ public:
 
     void add(const Order& order) noexcept;
 
+    void cancel(const OrderId id) noexcept;
+
     std::optional<Price> getBestBid() const noexcept;
 
     std::optional<Price> getBestAsk() const noexcept;

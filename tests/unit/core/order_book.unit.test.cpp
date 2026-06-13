@@ -10,6 +10,7 @@ constexpr Price kMatchPrice{1'0000};
 
 const Order kBuy{Side::BUY, Quantity{1}, kTicker, kMatchPrice};
 const Order kSell{Side::SELL, Quantity{1}, kTicker, kMatchPrice};
+const Order kUntracked{Side::BUY, Quantity{1}, kTicker, kMatchPrice};
 
 TEST(OrderBook, ConstructorBasic) {
     const OrderBook kOrderBook{kTicker};
@@ -43,4 +44,24 @@ TEST(OrderBook, AddBasicOrdersToAsks) {
 
     EXPECT_EQ(order_book.getBestAsk(), kMatchPrice);
     EXPECT_EQ(order_book.getBestBid(), std::nullopt);
+}
+
+TEST(OrderBook, CancelRemovesOrderFromBook) {
+    OrderBook order_book{kTicker};
+    order_book.add(kBuy);
+    ASSERT_EQ(order_book.getBestBid(), kMatchPrice);
+
+    order_book.cancel(kBuy.getId());
+
+    EXPECT_EQ(order_book.getBestBid(), std::nullopt);
+}
+
+TEST(OrderBook, CancelUnknownIdIsNoOp) {
+    OrderBook order_book{kTicker};
+    order_book.add(kBuy);
+    ASSERT_EQ(order_book.getBestBid(), kMatchPrice);
+
+    order_book.cancel(kUntracked.getId());
+
+    EXPECT_EQ(order_book.getBestBid(), kMatchPrice);
 }

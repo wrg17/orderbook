@@ -43,11 +43,36 @@ void OrderBook::add(const Order& order) noexcept {
     const OrderId kId = order.getId();
     const Price kPrice = order.getPrice();
     const Quantity kQty = order.getQuantity();
+    const Side kSide = order.getSide();
 
-    auto order_ptr = std::make_unique<RestingOrder>(kId, kQty);
+    auto order_ptr = std::make_unique<RestingOrder>(kId, kQty, kSide);
 
-    PriceLevel* level = order.getSide() == Side::BUY ? &bids_[kPrice] : &asks_[kPrice];
-    level->pushBack(*order_ptr);
+    auto [it, _] =
+        kSide == Side::BUY ? bids_.try_emplace(kPrice, kPrice) : asks_.try_emplace(kPrice, kPrice);
+    it->second.pushBack(*order_ptr);
 
     orders_.emplace(kId, std::move(order_ptr));
+}
+
+void OrderBook::cancel(const OrderId kId) noexcept {
+    auto node = orders_.extract(kId);
+    if (node.empty()) {
+        return;
+    }
+
+    RestingOrder* order = node.mapped().get();
+
+    PriceLevel* level = order->getLevel();
+    const Price kPrice = level->getPrice();
+    const Side kSide = order->getSide();
+
+    order->unlink();
+
+    if (level->empty()) {
+        if (kSide == Side::BUY) {
+            bids_.erase(kPrice);
+        } else {
+            asks_.erase(kPrice);
+        }
+    }
 }

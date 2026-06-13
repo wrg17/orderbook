@@ -13,16 +13,20 @@ constexpr Quantity kQuantity{10};
 constexpr Quantity kReduction{3};
 constexpr Quantity kZeroQuantity{};
 
+constexpr Price kPrice{1'0000};
+constexpr Side kSide{Side::BUY};
+
 constexpr std::size_t kZeroOrders = 0;
 constexpr std::size_t kOneOrder = 1;
 constexpr std::size_t kTwoOrders = 2;
 constexpr std::size_t kThreeOrders = 3;
 
 TEST(RestingOrder, ConstructorInitializesFields) {
-    const RestingOrder kRestingOrder{kFirstOrder, kQuantity};
+    const RestingOrder kRestingOrder{kFirstOrder, kQuantity, kSide};
 
     EXPECT_EQ(kRestingOrder.getId(), kFirstOrder);
     EXPECT_EQ(kRestingOrder.getQuantity(), kQuantity);
+    EXPECT_EQ(kRestingOrder.getSide(), kSide);
     EXPECT_EQ(kRestingOrder.getLevel(), nullptr);
     EXPECT_EQ(kRestingOrder.getNext(), nullptr);
     EXPECT_EQ(kRestingOrder.getPrev(), nullptr);
@@ -30,16 +34,17 @@ TEST(RestingOrder, ConstructorInitializesFields) {
 
 class PriceLevelTest : public ::testing::Test {
 protected:
-    PriceLevel level_;
-    RestingOrder first_order_{kFirstOrder, kQuantity};
-    RestingOrder second_order_{kSecondOrder, kQuantity};
-    RestingOrder third_order_{kThirdOrder, kQuantity};
+    PriceLevel level_{kPrice};
+    RestingOrder first_order_{kFirstOrder, kQuantity, kSide};
+    RestingOrder second_order_{kSecondOrder, kQuantity, kSide};
+    RestingOrder third_order_{kThirdOrder, kQuantity, kSide};
 };
 
 TEST(PriceLevel, ConstructorInitializesEmpty) {
-    const PriceLevel kLevel{};
+    const PriceLevel kLevel{kPrice};
 
     EXPECT_TRUE(kLevel.empty());
+    EXPECT_EQ(kLevel.getPrice(), kPrice);
     EXPECT_EQ(kLevel.getOrderCount(), kZeroOrders);
     EXPECT_EQ(kLevel.getTotalQuantity(), kZeroQuantity);
     EXPECT_EQ(kLevel.getFront(), nullptr);

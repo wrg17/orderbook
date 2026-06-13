@@ -9,8 +9,9 @@
  * PriceLevel
  */
 
-PriceLevel::PriceLevel() noexcept
-    : order_count_(0), total_quantity_(Quantity{}), sentinel_(OrderId{}, Quantity{}) {
+PriceLevel::PriceLevel(Price price) noexcept
+    : price_(price), order_count_(0), total_quantity_(Quantity{}),
+      sentinel_(OrderId{}, Quantity{}, Side::BUY) {
     sentinel_.level_ = this;
     sentinel_.next_ = &sentinel_;
     sentinel_.prev_ = &sentinel_;
@@ -25,6 +26,10 @@ PriceLevel::~PriceLevel() noexcept {
 
 bool PriceLevel::empty() const noexcept {
     return order_count_ == 0;
+}
+
+Price PriceLevel::getPrice() const noexcept {
+    return price_;
 }
 
 RestingOrder* PriceLevel::getFront() const noexcept {
@@ -59,7 +64,8 @@ void PriceLevel::pushBack(RestingOrder& order) noexcept {
  * RestingOrder
  */
 
-RestingOrder::RestingOrder(OrderId id, Quantity quantity) noexcept : id_(id), quantity_(quantity) {}
+RestingOrder::RestingOrder(OrderId id, Quantity quantity, Side side) noexcept
+    : id_(id), quantity_(quantity), side_(side) {}
 
 RestingOrder::~RestingOrder() noexcept {
     assert(level_ == nullptr && next_ == nullptr && prev_ == nullptr);
@@ -67,6 +73,10 @@ RestingOrder::~RestingOrder() noexcept {
 
 OrderId RestingOrder::getId() const noexcept {
     return id_;
+}
+
+Side RestingOrder::getSide() const noexcept {
+    return side_;
 }
 
 Quantity RestingOrder::getQuantity() const noexcept {
