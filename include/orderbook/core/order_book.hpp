@@ -13,6 +13,14 @@
 
 class OrderBook {
 public:
+    struct Front {
+        Price price;
+        Quantity quantity;
+        OrderId id;
+
+        bool operator==(const Front&) const = default;
+    };
+
     explicit OrderBook(Ticker ticker) noexcept;
 
     ~OrderBook() noexcept;
@@ -21,19 +29,27 @@ public:
 
     void add(const Order& order) noexcept;
 
-    void cancel(const OrderId id) noexcept;
+    void cancel(OrderId id) noexcept;
 
-    std::optional<Price> getBestBid() const noexcept;
+    std::optional<Front> getBestBid() const noexcept;
 
-    std::optional<Price> getBestAsk() const noexcept;
+    std::optional<Front> getBestAsk() const noexcept;
+
+    void takeBestBid(Quantity qty) noexcept;
+
+    void takeBestAsk(Quantity qty) noexcept;
 
 private:
+    std::optional<Front> front(const auto& map) const noexcept;
+
+    void take(auto& map, Quantity qty) noexcept;
+
+    static void removeOrder(auto& map, RestingOrder& order) noexcept;
+
     Ticker ticker_{};
 
     std::map<Price, PriceLevel> asks_;
     std::map<Price, PriceLevel, std::greater<>> bids_;
 
     std::unordered_map<OrderId, std::unique_ptr<RestingOrder>> orders_;
-
-    std::uint64_t trades_count_ = 0;
 };

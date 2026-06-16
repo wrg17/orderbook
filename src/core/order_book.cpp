@@ -3,6 +3,8 @@
 //
 
 #include <orderbook/core/order_book.hpp>
+
+#include <cassert>
 #include <ranges>
 
 OrderBook::OrderBook(Ticker ticker) noexcept : ticker_(ticker) {}
@@ -19,24 +21,70 @@ Ticker OrderBook::getTicker() const noexcept {
     return ticker_;
 }
 
-std::optional<Price> OrderBook::getBestAsk() const noexcept {
-    if (asks_.empty()) {
-        return std::nullopt;
-    }
-
-    const auto kMin = asks_.begin();
-    auto price = kMin->first;
-    return {price};
+std::optional<OrderBook::Front> OrderBook::getBestAsk() const noexcept {
+    return front(asks_);
 }
 
-std::optional<Price> OrderBook::getBestBid() const noexcept {
-    if (bids_.empty()) {
+std::optional<OrderBook::Front> OrderBook::getBestBid() const noexcept {
+    return front(bids_);
+}
+
+void OrderBook::takeBestAsk(Quantity qty) noexcept {
+    take(asks_, qty);
+}
+
+void OrderBook::takeBestBid(Quantity qty) noexcept {
+    take(bids_, qty);
+}
+
+std::optional<OrderBook::Front> OrderBook::front(const auto& map) const noexcept {
+    if (map.empty()) {
         return std::nullopt;
     }
 
-    const auto kMax = bids_.begin();
-    auto price = kMax->first;
-    return {price};
+    auto it = map.begin();
+
+    const Price kPrice = it->first;
+    const PriceLevel* level = &it->second;
+
+    const RestingOrder* const kLevelFront = level->getFront();
+
+    return Front{
+        .price = kPrice, .quantity = kLevelFront->getQuantity(), .id = kLevelFront->getId()};
+}
+
+void OrderBook::removeOrder(auto& map, RestingOrder& order) noexcept {
+    const PriceLevel* const kLevelPtr = order.getLevel();
+
+    const Price kPrice = kLevelPtr->getPrice();
+
+    order.unlink();
+
+    if (kLevelPtr->empty()) {
+        map.erase(kPrice);
+    }
+}
+
+void OrderBook::take(auto& map, Quantity qty) noexcept {
+    assert(!map.empty());
+
+    auto it = map.begin();
+
+    const PriceLevel* const kLevel = &it->second;
+
+    RestingOrder* const kRestingPtr = kLevel->getFront();
+
+    const Quantity kRestingQty = kRestingPtr->getQuantity();
+    const OrderId kId = kRestingPtr->getId();
+
+    assert(kRestingQty >= qty);
+
+    kRestingPtr->reduce(qty);
+
+    if (kRestingQty == qty) {
+        removeOrder(map, *kRestingPtr);
+        orders_.erase(kId);
+    }
 }
 
 void OrderBook::add(const Order& order) noexcept {
@@ -54,25 +102,17 @@ void OrderBook::add(const Order& order) noexcept {
     orders_.emplace(kId, std::move(order_ptr));
 }
 
-void OrderBook::cancel(const OrderId kId) noexcept {
-    auto node = orders_.extract(kId);
-    if (node.empty()) {
+void OrderBook::cancel(OrderId id) noexcept {
+    const auto kNode = orders_.extract(id);
+    if (kNode.empty()) {
         return;
     }
 
-    RestingOrder* order = node.mapped().get();
+    std::unique_ptr<RestingOrder> order = std::move(kNode.mapped());
 
-    PriceLevel* level = order->getLevel();
-    const Price kPrice = level->getPrice();
-    const Side kSide = order->getSide();
-
-    order->unlink();
-
-    if (level->empty()) {
-        if (kSide == Side::BUY) {
-            bids_.erase(kPrice);
-        } else {
-            asks_.erase(kPrice);
-        }
+    if (order->getSide() == Side::BUY) {
+        removeOrder(bids_, *order);
+    } else {
+        removeOrder(asks_, *order);
     }
 }
