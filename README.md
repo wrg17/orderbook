@@ -13,6 +13,7 @@ Inside the container (built from `docker/Dockerfile`):
 
 - C++20 toolchain (g++, CMake, Ninja, GDB)
 - clang-format, clang-tidy
+- gcovr (line coverage reporting)
 - vcpkg (vendored at `extern/vcpkg`)
 - GoogleTest (via vcpkg)
 
@@ -38,12 +39,14 @@ make format-check  # verify formatting (no changes)
 make lint          # clang-tidy (strict — warnings are errors)
 make build         # configure + build
 make test          # build + ctest
-make verify        # format-check + lint + test (same as the pre-push hook)
+make coverage      # instrumented build + ctest + gcovr report (threshold 98%)
+make verify        # format-check + lint + test + coverage (same as the pre-push hook)
 make shell         # open a bash shell inside the dev container
 make clean         # remove the build directory
 ```
 
 ## Pre-push hook
 
-`make init` points `core.hooksPath` at `.githooks/`, so `git push` runs `make verify` first — what passes locally passes
-in CI. To bypass for a WIP branch, use `git push --no-verify`.
+`make init` points `core.hooksPath` at `.githooks/`, so `git push` runs `make
+verify` first — what passes locally passes in CI, including the coverage gate.
+To bypass for a WIP branch, use `git push --no-verify`.

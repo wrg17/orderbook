@@ -41,6 +41,16 @@
         "ORDERBOOK_BUILD_TESTS": "ON",
         "ORDERBOOK_WARNINGS_AS_ERRORS": "ON"
       }
+    },
+    {
+      "name": "coverage",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ORDERBOOK_BUILD_TESTS": "ON",
+        "CMAKE_CXX_FLAGS_INIT": "--coverage",
+        "CMAKE_EXE_LINKER_FLAGS_INIT": "--coverage"
+      }
     }
   ],
   "buildPresets": [
@@ -55,6 +65,10 @@
     {
       "name": "ci",
       "configurePreset": "ci"
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage"
     }
   ],
   "testPresets": [
@@ -75,6 +89,13 @@
     {
       "name": "ci",
       "configurePreset": "ci",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage",
       "output": {
         "outputOnFailure": true
       }

@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SKIP_COVERAGE=0
+for arg in "$@"; do
+  case "$arg" in
+    --no-coverage) SKIP_COVERAGE=1 ;;
+  esac
+done
+
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 CACHE_FILE="$REPO_ROOT/.cache/last-verified-hash"
 
@@ -24,11 +31,17 @@ if [[ -f "$CACHE_FILE" ]] && [[ "$(cat "$CACHE_FILE")" == "$current_hash" ]]; th
 fi
 
 echo "==> verify: running"
-docker compose run --rm orderbook-dev bash -c \
-  'cmake --preset ci \
+
+DOCKER_CMD='cmake --preset ci \
     && scripts/format-check.sh \
     && scripts/lint-diff.sh --no-configure \
     && scripts/test.sh --no-configure'
+
+if [[ $SKIP_COVERAGE -eq 0 ]]; then
+  DOCKER_CMD="$DOCKER_CMD && scripts/coverage.sh"
+fi
+
+docker compose run --rm orderbook-dev bash -c "$DOCKER_CMD"
 
 mkdir -p "$(dirname "$CACHE_FILE")"
 echo "$current_hash" > "$CACHE_FILE"
