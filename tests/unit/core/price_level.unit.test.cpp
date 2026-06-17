@@ -34,6 +34,20 @@ TEST(RestingOrder, ConstructorInitializesFields) {
 
 class PriceLevelTest : public ::testing::Test {
 protected:
+    void TearDown() override {
+        if (first_order_.getLevel() != nullptr) {
+            first_order_.unlink();
+        }
+
+        if (second_order_.getLevel() != nullptr) {
+            second_order_.unlink();
+        }
+
+        if (third_order_.getLevel() != nullptr) {
+            third_order_.unlink();
+        }
+    }
+
     PriceLevel level_{kPrice};
     RestingOrder first_order_{kFirstOrder, kQuantity, kSide};
     RestingOrder second_order_{kSecondOrder, kQuantity, kSide};
