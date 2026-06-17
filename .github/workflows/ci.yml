@@ -31,3 +31,12 @@ jobs:
         with:
           submodules: recursive
       - run: docker compose run --rm orderbook-dev bash scripts/test.sh
+
+  coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+      - run: docker compose run --rm orderbook-dev bash scripts/coverage.sh
