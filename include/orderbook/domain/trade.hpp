@@ -19,23 +19,23 @@ struct TradeId {
 class Trade {
 public:
     Trade(OrderId maker, OrderId taker, Side side, Ticker ticker, Price price, Quantity quantity,
-          std::chrono::system_clock::time_point time);
+          std::chrono::system_clock::time_point time) noexcept;
 
-    [[nodiscard]] TradeId getId() const;
+    [[nodiscard]] TradeId getId() const noexcept;
 
-    [[nodiscard]] OrderId getMakerOrderId() const;
+    [[nodiscard]] OrderId getMakerOrderId() const noexcept;
 
-    [[nodiscard]] OrderId getTakerOrderId() const;
+    [[nodiscard]] OrderId getTakerOrderId() const noexcept;
 
-    [[nodiscard]] Side getTakerSide() const;
+    [[nodiscard]] Side getTakerSide() const noexcept;
 
-    [[nodiscard]] Ticker getTicker() const;
+    [[nodiscard]] Ticker getTicker() const noexcept;
 
-    [[nodiscard]] Price getPrice() const;
+    [[nodiscard]] Price getPrice() const noexcept;
 
-    [[nodiscard]] Quantity getQuantity() const;
+    [[nodiscard]] Quantity getQuantity() const noexcept;
 
-    [[nodiscard]] std::chrono::system_clock::time_point getTime() const;
+    [[nodiscard]] std::chrono::system_clock::time_point getTime() const noexcept;
 
 private:
     inline static std::atomic<std::uint64_t> id_seq = 0;
@@ -54,15 +54,16 @@ private:
     std::chrono::system_clock::time_point time_;
 };
 
-std::ostream& operator<<(std::ostream& os, const Trade& trade);
+std::ostream& operator<<(std::ostream& os, const Trade& trade) noexcept;
 
 template <> struct std::formatter<TradeId> : std::formatter<std::uint64_t> {
-    std::format_context::iterator format(TradeId id, std::format_context& ctx) const;
+    std::format_context::iterator format(TradeId id, std::format_context& ctx) const noexcept;
 };
 
 template <> struct std::formatter<Trade> {
     static constexpr auto parse(const std::format_parse_context& ctx) {
         return ctx.begin();
     }
-    static std::format_context::iterator format(const Trade& trade, std::format_context& ctx);
+    static std::format_context::iterator format(const Trade& trade,
+                                                std::format_context& ctx) noexcept;
 };

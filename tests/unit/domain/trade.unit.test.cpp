@@ -75,3 +75,19 @@ TEST(Trade, FormatsAllFields) {
         kQuantity.value, kTime.time_since_epoch().count());
     EXPECT_EQ(std::format("{}", kTrade), kExpected);
 }
+
+namespace {
+struct ThrowingBuf : std::streambuf {
+    int_type overflow(int_type /*ch*/) override {
+        throw std::runtime_error("boom");
+    }
+};
+} // namespace
+
+TEST(TradeDeathTest, OperatorOutputAbortsOnStreamThrow) {
+    ThrowingBuf buf;
+    std::ostream os{&buf};
+    os.exceptions(std::ios::badbit);
+    const Trade kTrade{kMakerOrderId, kTakerOrderId, Side::SELL, kTicker, kPrice, kQuantity, kTime};
+    EXPECT_DEATH(os << kTrade, "");
+}
