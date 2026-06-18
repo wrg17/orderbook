@@ -267,3 +267,67 @@ TEST_F(PriceLevelTest, ReduceThenUnlinkLeavesTotalAtZero) {
     first_order_.unlink();
     ASSERT_EQ(level_.getTotalQuantity(), kZeroQuantity);
 }
+
+#ifndef NDEBUG
+
+TEST(PriceLevelDeathTest, DestructorAbortsWhenNotEmpty) {
+    EXPECT_DEATH(
+        {
+            RestingOrder order(kFirstOrder, kQuantity, kSide);
+            {
+                PriceLevel level{kPrice};
+                level.pushBack(order);
+            }
+        },
+        "");
+}
+
+TEST(PriceLevelDeathTest, PushBackAbortsWhenOrderAlreadyLinked) {
+    EXPECT_DEATH(
+        {
+            PriceLevel level{kPrice};
+            RestingOrder order(kFirstOrder, kQuantity, kSide);
+            level.pushBack(order);
+            level.pushBack(order);
+        },
+        "");
+}
+
+TEST(RestingOrderDeathTest, DestructorAbortsWhenStillLinked) {
+    EXPECT_DEATH(
+        {
+            PriceLevel level{kPrice};
+            RestingOrder order(kFirstOrder, kQuantity, kSide);
+            level.pushBack(order);
+        },
+        "");
+}
+
+TEST(RestingOrderDeathTest, UnlinkAbortsWhenNotLinked) {
+    EXPECT_DEATH(
+        {
+            RestingOrder order(kFirstOrder, kQuantity, kSide);
+            order.unlink();
+        },
+        "");
+}
+
+TEST(RestingOrderDeathTest, ReduceAbortsWhenReductionExceedsQuantity) {
+    EXPECT_DEATH(
+        {
+            RestingOrder order(kFirstOrder, kQuantity, kSide);
+            order.reduce(kQuantity + kReduction);
+        },
+        "");
+}
+
+TEST(RestingOrderDeathTest, ReduceAbortsWhenNotLinked) {
+    EXPECT_DEATH(
+        {
+            RestingOrder order(kFirstOrder, kQuantity, kSide);
+            order.reduce(kReduction);
+        },
+        "");
+}
+
+#endif // NDEBUG

@@ -18,7 +18,7 @@ PriceLevel::PriceLevel(Price price) noexcept
 }
 
 PriceLevel::~PriceLevel() noexcept {
-    assert(sentinel_.next_ == &sentinel_ && sentinel_.prev_ == &sentinel_);
+    assert(sentinel_.next_ == &sentinel_ && sentinel_.prev_ == &sentinel_); // GCOVR_EXCL_BR_LINE
     sentinel_.level_ = nullptr;
     sentinel_.prev_ = nullptr;
     sentinel_.next_ = nullptr;
@@ -45,9 +45,9 @@ std::size_t PriceLevel::getOrderCount() const noexcept {
 }
 
 void PriceLevel::pushBack(RestingOrder& order) noexcept {
-    assert(order.level_ == nullptr);
-    assert(order.next_ == nullptr);
-    assert(order.prev_ == nullptr);
+    assert(order.level_ == nullptr); // GCOVR_EXCL_BR_LINE
+    assert(order.next_ == nullptr);  // GCOVR_EXCL_BR_LINE
+    assert(order.prev_ == nullptr);  // GCOVR_EXCL_BR_LINE
 
     order.level_ = this;
     order.prev_ = sentinel_.prev_;
@@ -68,7 +68,7 @@ RestingOrder::RestingOrder(OrderId id, Quantity quantity, Side side) noexcept
     : id_(id), quantity_(quantity), side_(side) {}
 
 RestingOrder::~RestingOrder() noexcept {
-    assert(level_ == nullptr && next_ == nullptr && prev_ == nullptr);
+    assert(level_ == nullptr && next_ == nullptr && prev_ == nullptr); // GCOVR_EXCL_BR_LINE
 }
 
 OrderId RestingOrder::getId() const noexcept {
@@ -102,9 +102,9 @@ RestingOrder* RestingOrder::getPrev() const noexcept {
 }
 
 void RestingOrder::unlink() noexcept {
-    assert(level_ != nullptr);
-    assert(prev_ != nullptr);
-    assert(next_ != nullptr);
+    assert(level_ != nullptr); // GCOVR_EXCL_BR_LINE
+    assert(prev_ != nullptr);  // GCOVR_EXCL_BR_LINE
+    assert(next_ != nullptr);  // GCOVR_EXCL_BR_LINE
 
     // prev <-> this <-> next
     prev_->next_ = next_;
@@ -119,8 +119,8 @@ void RestingOrder::unlink() noexcept {
 }
 
 void RestingOrder::reduce(Quantity reduction) noexcept {
-    assert(reduction <= quantity_);
-    assert(level_ != nullptr);
+    assert(reduction <= quantity_); // GCOVR_EXCL_BR_LINE
+    assert(level_ != nullptr);      // GCOVR_EXCL_BR_LINE
 
     quantity_ -= reduction;
     level_->total_quantity_ -= reduction;

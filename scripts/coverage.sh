@@ -15,7 +15,7 @@ fi
 cmake --build --preset coverage
 ctest --preset coverage --output-on-failure
 
-COVERAGE_MIN="${COVERAGE_MIN:-98}"
+COVERAGE_MIN="${COVERAGE_MIN:-100}"
 mkdir -p build/coverage/html
 
 gcovr \
@@ -25,4 +25,6 @@ gcovr \
   --exclude-throw-branches \
   --html-details build/coverage/html/index.html \
   --print-summary \
-  --fail-under-line "$COVERAGE_MIN"
+  --fail-under-line "$COVERAGE_MIN" \
+  --fail-under-branch "$COVERAGE_MIN" \
+  --fail-under-function "$COVERAGE_MIN"
