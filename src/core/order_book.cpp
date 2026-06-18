@@ -11,9 +11,7 @@ OrderBook::OrderBook(Ticker ticker) noexcept : ticker_(ticker) {}
 
 OrderBook::~OrderBook() noexcept {
     for (auto& order_ptr : orders_ | std::views::values) {
-        if (order_ptr->getLevel() != nullptr) {
-            order_ptr->unlink();
-        }
+        order_ptr->unlink();
     }
 }
 
@@ -66,7 +64,7 @@ void OrderBook::removeOrder(auto& map, RestingOrder& order) noexcept {
 }
 
 void OrderBook::take(auto& map, Quantity qty) noexcept {
-    assert(!map.empty());
+    assert(!map.empty()); // GCOVR_EXCL_BR_LINE
 
     auto it = map.begin();
 
@@ -77,7 +75,7 @@ void OrderBook::take(auto& map, Quantity qty) noexcept {
     const Quantity kRestingQty = kRestingPtr->getQuantity();
     const OrderId kId = kRestingPtr->getId();
 
-    assert(kRestingQty >= qty);
+    assert(kRestingQty >= qty); // GCOVR_EXCL_BR_LINE
 
     kRestingPtr->reduce(qty);
 

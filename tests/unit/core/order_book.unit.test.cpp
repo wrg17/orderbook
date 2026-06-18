@@ -52,7 +52,22 @@ TEST(OrderBook, AddBasicOrdersToAsks) {
     EXPECT_EQ(order_book.getBestBid(), std::nullopt);
 }
 
-TEST(OrderBook, CancelRemovesOrderFromBook) {
+TEST(OrderBook, AddTwoOrdersAndPopOnlyOne) {
+    OrderBook order_book{kTicker};
+
+    order_book.add(kBuy);
+    order_book.add(kBigBuy);
+
+    ASSERT_EQ(order_book.getBestBid(),
+              (OrderBook::Front{kMatchPrice, kBuy.getQuantity(), kBuy.getId()}));
+
+    order_book.takeBestBid(kBuy.getQuantity());
+
+    ASSERT_EQ(order_book.getBestBid(),
+              (OrderBook::Front{kMatchPrice, kBigBuy.getQuantity(), kBigBuy.getId()}));
+}
+
+TEST(OrderBook, CancelRemovesBuyFromBook) {
     OrderBook order_book{kTicker};
     order_book.add(kBuy);
     ASSERT_EQ(order_book.getBestBid(),
@@ -61,6 +76,17 @@ TEST(OrderBook, CancelRemovesOrderFromBook) {
     order_book.cancel(kBuy.getId());
 
     EXPECT_EQ(order_book.getBestBid(), std::nullopt);
+}
+
+TEST(OrderBook, CancelRemovesSaleFromBook) {
+    OrderBook order_book{kTicker};
+    order_book.add(kSell);
+    ASSERT_EQ(order_book.getBestAsk(),
+              (OrderBook::Front{kMatchPrice, kSell.getQuantity(), kSell.getId()}));
+
+    order_book.cancel(kSell.getId());
+
+    EXPECT_EQ(order_book.getBestAsk(), std::nullopt);
 }
 
 TEST(OrderBook, CancelUnknownIdIsNoOp) {
@@ -114,3 +140,36 @@ TEST(OrderBook, TakeBestAskFull) {
 
     EXPECT_EQ(order_book.getBestAsk(), std::nullopt);
 }
+
+TEST(OrderBook, BookFrontComparison) {
+    constexpr OrderId kId{1};
+    constexpr OrderBook::Front kBase{.price = kMatchPrice, .quantity = kBigQuantity, .id = kId};
+
+    constexpr OrderBook::Front kMatch{.price = kMatchPrice, .quantity = kBigQuantity, .id = kId};
+    ASSERT_EQ(kBase, kMatch);
+
+    constexpr OrderBook::Front kDiffPrice{
+        .price = Price{kMatchPrice.value + 1}, .quantity = kBigQuantity, .id = kId};
+    ASSERT_NE(kBase, kDiffPrice);
+
+    constexpr OrderBook::Front kDiffQuantity{
+        .price = kMatchPrice, .quantity = Quantity{kBigQuantity.value + 1}, .id = kId};
+    ASSERT_NE(kBase, kDiffQuantity);
+
+    constexpr OrderBook::Front kDiffId{
+        .price = kMatchPrice, .quantity = kBigQuantity, .id = OrderId{kId.value + 1}};
+    ASSERT_NE(kBase, kDiffId);
+}
+
+#ifndef NDEBUG
+TEST(OrderBook, TakeFailsForAnEmptyBidMap) {
+    OrderBook order_book{kTicker};
+    ASSERT_DEATH(order_book.takeBestAsk(kBigQuantity), "");
+}
+
+TEST(OrderBook, TakeFailsWhenQuantityExceedsFront) {
+    OrderBook order_book{kTicker};
+    order_book.add(kBuy);
+    ASSERT_DEATH(order_book.takeBestBid(kBigQuantity), "");
+}
+#endif
