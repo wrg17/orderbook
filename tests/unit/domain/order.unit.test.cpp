@@ -39,6 +39,19 @@ TEST(Order, IdsAreUniqueAcrossMultipleOrders) {
     EXPECT_NE(kA.getId(), kC.getId());
 }
 
+TEST(Price, Comparisons) {
+    constexpr Price kLow{1};
+    constexpr Price kHigh{2};
+    EXPECT_LT(kLow, kHigh);
+    EXPECT_GT(kHigh, kLow);
+
+    EXPECT_LE(kLow, kLow);
+    EXPECT_GE(kHigh, kHigh);
+
+    EXPECT_EQ(kHigh, kHigh);
+    EXPECT_EQ(kLow, kLow);
+}
+
 TEST(OrderId, FormatsValue) {
     EXPECT_EQ(std::format("{}", OrderId{42}), "42");
 }
