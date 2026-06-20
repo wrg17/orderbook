@@ -48,3 +48,7 @@ build/
 
 # debug information files
 *.dwo
+
+# Core dumps
+core
+core.*
