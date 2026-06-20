@@ -1,26 +1,25 @@
 # orderbook
 
-A order-matching engine in C++20.
+An order matching engine in C++20.
 
 ## Dependencies
 
 On the host, you only need:
 
-- **Docker** (with the Compose plugin) — everything else runs inside the dev container
+- **Docker** (with the Compose plugin) — everything else runs inside the dev container for portability
 - **Git** — clone with `--recurse-submodules` so the bundled vcpkg comes along
 
 Inside the container (built from `docker/Dockerfile`):
 
 - C++20 toolchain (g++, CMake, Ninja, GDB)
 - clang-format, clang-tidy
-- gcovr (line coverage reporting)
+- gcovr (line/branch/function coverage reporting)
 - vcpkg (vendored at `extern/vcpkg`)
 - GoogleTest (via vcpkg)
 
 ## Setup
 
-Run `make init` once after cloning. It verifies the host tooling, marks the helper scripts executable, and enables the
-pre-push hook:
+Run `make init` once after cloning. It verifies the host tooling and enables the pre-push hook:
 
 ```bash
 make init
@@ -39,7 +38,7 @@ make format-check  # verify formatting (no changes)
 make lint          # clang-tidy (strict — warnings are errors)
 make build         # configure + build
 make test          # build + ctest
-make coverage      # instrumented build + ctest + gcovr report (threshold 98%)
+make coverage      # instrumented build + ctest + gcovr report (threshold 100%)
 make verify        # format-check + lint + test + coverage (same as the pre-push hook)
 make shell         # open a bash shell inside the dev container
 make clean         # remove the build directory

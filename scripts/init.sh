@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # One-time setup for a fresh clone. Idempotent — safe to re-run.
-# Checks required tooling, marks scripts/hooks executable, enables the pre-push hook.
+# Checks required tooling and enables the pre-push hook.
 set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
@@ -45,9 +45,6 @@ if [[ $failed -ne 0 ]]; then
   echo "==> dependency check failed" >&2
   exit 1
 fi
-
-echo "==> setting executable bits"
-chmod +x scripts/*.sh .githooks/*
 
 echo "==> enabling git hooks"
 git config core.hooksPath .githooks
