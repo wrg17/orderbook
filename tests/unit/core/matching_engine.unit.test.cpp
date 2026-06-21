@@ -1,5 +1,10 @@
 #include <gtest/gtest.h>
+#include <orderbook/core/matching_engine.hpp>
 
-TEST(MatchingEngineSmokeTest, TrueIsTrue) {
-    EXPECT_TRUE(true);
+constexpr Ticker kTicker{1};
+
+TEST(MatchingEngine, ConstructorInitTheBasics) {
+    const MatchingEngine kMatchingEngine{kTicker};
+
+    EXPECT_EQ(kMatchingEngine.getTicker(), kTicker);
 }
