@@ -86,18 +86,17 @@ void OrderBook::take(auto& map, Quantity qty) noexcept {
 }
 
 void OrderBook::add(const Order& order) noexcept {
-    const OrderId kId = order.getId();
-    const Price kPrice = order.getPrice();
-    const Quantity kQty = order.getQuantity();
-    const Side kSide = order.getSide();
+    add(order.getId(), order.getSide(), order.getPrice(), order.getQuantity());
+}
 
-    auto order_ptr = std::make_unique<RestingOrder>(kId, kQty, kSide);
+void OrderBook::add(OrderId id, Side side, Price price, Quantity quantity) noexcept {
+    auto order_ptr = std::make_unique<RestingOrder>(id, quantity, side);
 
     auto [it, _] =
-        kSide == Side::BUY ? bids_.try_emplace(kPrice, kPrice) : asks_.try_emplace(kPrice, kPrice);
+        side == Side::BUY ? bids_.try_emplace(price, price) : asks_.try_emplace(price, price);
     it->second.pushBack(*order_ptr);
 
-    orders_.emplace(kId, std::move(order_ptr));
+    orders_.emplace(id, std::move(order_ptr));
 }
 
 void OrderBook::cancel(OrderId id) noexcept {

@@ -29,6 +29,8 @@ public:
 
     void add(const Order& order) noexcept;
 
+    void add(OrderId id, Side side, Price price, Quantity quantity) noexcept;
+
     void cancel(OrderId id) noexcept;
 
     std::optional<Front> getBestBid() const noexcept;
