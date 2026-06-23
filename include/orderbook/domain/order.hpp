@@ -2,7 +2,8 @@
 // Created by Will George on 3/22/26.
 //
 
-#pragma once
+#ifndef ORDERBOOK_DOMAIN_ORDER_HPP
+#define ORDERBOOK_DOMAIN_ORDER_HPP
 
 #include <atomic>
 #include <compare>
@@ -123,3 +124,5 @@ template <> struct std::formatter<Order> {
     static std::format_context::iterator format(const Order& order,
                                                 std::format_context& ctx) noexcept;
 };
+
+#endif // ORDERBOOK_DOMAIN_ORDER_HPP

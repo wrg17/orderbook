@@ -2,7 +2,8 @@
 // Created by Will George on 6/7/26.
 //
 
-#pragma once
+#ifndef ORDERBOOK_CORE_PRICE_LEVEL_HPP
+#define ORDERBOOK_CORE_PRICE_LEVEL_HPP
 
 #include <orderbook/domain/order.hpp>
 
@@ -77,3 +78,5 @@ private:
     Quantity total_quantity_;
     RestingOrder sentinel_;
 };
+
+#endif // ORDERBOOK_CORE_PRICE_LEVEL_HPP

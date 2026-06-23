@@ -2,7 +2,8 @@
 // Created by Will George on 3/22/26.
 //
 
-#pragma once
+#ifndef ORDERBOOK_DOMAIN_TRADE_HPP
+#define ORDERBOOK_DOMAIN_TRADE_HPP
 
 #include <atomic>
 #include <chrono>
@@ -67,3 +68,5 @@ template <> struct std::formatter<Trade> {
     static std::format_context::iterator format(const Trade& trade,
                                                 std::format_context& ctx) noexcept;
 };
+
+#endif // ORDERBOOK_DOMAIN_TRADE_HPP

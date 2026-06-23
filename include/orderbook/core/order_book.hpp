@@ -2,7 +2,8 @@
 // Created by Will George on 3/22/26.
 //
 
-#pragma once
+#ifndef ORDERBOOK_CORE_ORDER_BOOK_HPP
+#define ORDERBOOK_CORE_ORDER_BOOK_HPP
 
 #include <map>
 #include <memory>
@@ -55,3 +56,5 @@ private:
 
     std::unordered_map<OrderId, std::unique_ptr<RestingOrder>> orders_;
 };
+
+#endif // ORDERBOOK_CORE_ORDER_BOOK_HPP
