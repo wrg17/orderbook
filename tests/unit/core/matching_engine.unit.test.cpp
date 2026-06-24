@@ -48,6 +48,30 @@ TEST(MatchingEngine, SellCrossesRestingBidProducesTrade) {
     EXPECT_EQ(kTrades[0].getQuantity(), Quantity{10});
 }
 
+TEST(MatchingEngine, BuyAboveAskCrossesAtRestingPrice) {
+    MatchingEngine engine{kTicker};
+
+    EXPECT_TRUE(engine.submit(Order{Side::SELL, Quantity{10}, kTicker, Price{100}}).empty());
+    const std::vector<Trade> kTrades =
+        engine.submit(Order{Side::BUY, Quantity{10}, kTicker, Price{110}});
+
+    ASSERT_EQ(kTrades.size(), 1U);
+    EXPECT_EQ(kTrades[0].getPrice(), Price{100});
+    EXPECT_EQ(kTrades[0].getQuantity(), Quantity{10});
+}
+
+TEST(MatchingEngine, SellBelowBidCrossesAtRestingPrice) {
+    MatchingEngine engine{kTicker};
+
+    EXPECT_TRUE(engine.submit(Order{Side::BUY, Quantity{10}, kTicker, Price{110}}).empty());
+    const std::vector<Trade> kTrades =
+        engine.submit(Order{Side::SELL, Quantity{10}, kTicker, Price{100}});
+
+    ASSERT_EQ(kTrades.size(), 1U);
+    EXPECT_EQ(kTrades[0].getPrice(), Price{110});
+    EXPECT_EQ(kTrades[0].getQuantity(), Quantity{10});
+}
+
 TEST(MatchingEngine, BuyBelowAskDoesNotCross) {
     MatchingEngine engine{kTicker};
 
