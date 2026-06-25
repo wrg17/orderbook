@@ -26,6 +26,12 @@ public:
 
     ~OrderBook() noexcept;
 
+    OrderBook(const OrderBook& other) = delete;
+    OrderBook(OrderBook&& other) = delete;
+
+    OrderBook& operator=(const OrderBook& other) = delete;
+    OrderBook& operator=(OrderBook&& other) = delete;
+
     Ticker getTicker() const noexcept;
 
     void add(const Order& order) noexcept;

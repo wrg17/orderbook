@@ -18,7 +18,7 @@ public:
     RestingOrder(RestingOrder&& other) = delete;
 
     RestingOrder& operator=(const RestingOrder& other) = delete;
-    RestingOrder& operator=(const RestingOrder&& other) = delete;
+    RestingOrder& operator=(RestingOrder&& other) = delete;
 
     [[nodiscard]] OrderId getId() const noexcept;
 
@@ -56,7 +56,7 @@ public:
     PriceLevel(PriceLevel&& other) = delete;
 
     PriceLevel& operator=(const PriceLevel& other) = delete;
-    PriceLevel& operator=(const PriceLevel&& other) = delete;
+    PriceLevel& operator=(PriceLevel&& other) = delete;
 
     [[nodiscard]] bool empty() const noexcept;
 
