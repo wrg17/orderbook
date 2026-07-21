@@ -16,26 +16,20 @@ const Order kUntracked{Side::BUY, Quantity{1}, kTicker, kMatchPrice};
 const Order kBigBuy{Side::BUY, kBigQuantity, kTicker, kMatchPrice};
 const Order kBigSell{Side::SELL, kBigQuantity, kTicker, kMatchPrice};
 
-TEST(OrderBook, ConstructorBasic) {
-    const OrderBook kOrderBook{kTicker};
-
-    EXPECT_EQ(kOrderBook.getTicker(), kTicker);
-}
-
 TEST(OrderBook, GetBestBidWhenEmpty) {
-    const OrderBook kOrderBook{kTicker};
+    const OrderBook kOrderBook{};
 
     EXPECT_EQ(kOrderBook.getBestBid(), std::nullopt);
 }
 
 TEST(OrderBook, GetBestAskWhenEmpty) {
-    const OrderBook kOrderBook{kTicker};
+    const OrderBook kOrderBook{};
 
     EXPECT_EQ(kOrderBook.getBestAsk(), std::nullopt);
 }
 
 TEST(OrderBook, AddBasicOrdersToBids) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
     order_book.add(kBuy);
 
     EXPECT_EQ(order_book.getBestAsk(), std::nullopt);
@@ -44,7 +38,7 @@ TEST(OrderBook, AddBasicOrdersToBids) {
 }
 
 TEST(OrderBook, AddBasicOrdersToAsks) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
     order_book.add(kSell);
 
     EXPECT_EQ(order_book.getBestAsk(),
@@ -53,7 +47,7 @@ TEST(OrderBook, AddBasicOrdersToAsks) {
 }
 
 TEST(OrderBook, AddTwoOrdersAndPopOnlyOne) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
 
     order_book.add(kBuy);
     order_book.add(kBigBuy);
@@ -68,7 +62,7 @@ TEST(OrderBook, AddTwoOrdersAndPopOnlyOne) {
 }
 
 TEST(OrderBook, CancelRemovesBuyFromBook) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
     order_book.add(kBuy);
     ASSERT_EQ(order_book.getBestBid(),
               (OrderBook::Front{kMatchPrice, kBuy.getQuantity(), kBuy.getId()}));
@@ -79,7 +73,7 @@ TEST(OrderBook, CancelRemovesBuyFromBook) {
 }
 
 TEST(OrderBook, CancelRemovesSaleFromBook) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
     order_book.add(kSell);
     ASSERT_EQ(order_book.getBestAsk(),
               (OrderBook::Front{kMatchPrice, kSell.getQuantity(), kSell.getId()}));
@@ -90,7 +84,7 @@ TEST(OrderBook, CancelRemovesSaleFromBook) {
 }
 
 TEST(OrderBook, CancelUnknownIdIsNoOp) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
     order_book.add(kBuy);
     const OrderBook::Front kExpected{
         .price = kMatchPrice, .quantity = kBuy.getQuantity(), .id = kBuy.getId()};
@@ -102,7 +96,7 @@ TEST(OrderBook, CancelUnknownIdIsNoOp) {
 }
 
 TEST(OrderBook, TakeBestBidPartial) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
     order_book.add(kBigBuy);
 
     order_book.takeBestBid(kPartialQty);
@@ -113,7 +107,7 @@ TEST(OrderBook, TakeBestBidPartial) {
 }
 
 TEST(OrderBook, TakeBestBidFull) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
     order_book.add(kBigBuy);
 
     order_book.takeBestBid(kBigQuantity);
@@ -122,7 +116,7 @@ TEST(OrderBook, TakeBestBidFull) {
 }
 
 TEST(OrderBook, TakeBestAskPartial) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
     order_book.add(kBigSell);
 
     order_book.takeBestAsk(kPartialQty);
@@ -133,7 +127,7 @@ TEST(OrderBook, TakeBestAskPartial) {
 }
 
 TEST(OrderBook, TakeBestAskFull) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
     order_book.add(kBigSell);
 
     order_book.takeBestAsk(kBigQuantity);
@@ -163,12 +157,12 @@ TEST(OrderBook, BookFrontComparison) {
 
 #ifndef NDEBUG
 TEST(OrderBook, TakeFailsForAnEmptyBidMap) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
     ASSERT_DEATH(order_book.takeBestAsk(kBigQuantity), "");
 }
 
 TEST(OrderBook, TakeFailsWhenQuantityExceedsFront) {
-    OrderBook order_book{kTicker};
+    OrderBook order_book{};
     order_book.add(kBuy);
     ASSERT_DEATH(order_book.takeBestBid(kBigQuantity), "");
 }

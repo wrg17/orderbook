@@ -7,16 +7,12 @@
 #include <cassert>
 #include <ranges>
 
-OrderBook::OrderBook(Ticker ticker) noexcept : ticker_(ticker) {}
+OrderBook::OrderBook() noexcept = default;
 
 OrderBook::~OrderBook() noexcept {
     for (auto& order_ptr : orders_ | std::views::values) {
         order_ptr->unlink();
     }
-}
-
-Ticker OrderBook::getTicker() const noexcept {
-    return ticker_;
 }
 
 std::optional<OrderBook::Front> OrderBook::getBestAsk() const noexcept {

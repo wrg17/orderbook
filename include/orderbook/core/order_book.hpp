@@ -22,7 +22,7 @@ public:
         bool operator==(const Front&) const = default;
     };
 
-    explicit OrderBook(Ticker ticker) noexcept;
+    OrderBook() noexcept;
 
     ~OrderBook() noexcept;
 
@@ -31,8 +31,6 @@ public:
 
     OrderBook& operator=(const OrderBook& other) = delete;
     OrderBook& operator=(OrderBook&& other) = delete;
-
-    Ticker getTicker() const noexcept;
 
     void add(const Order& order) noexcept;
 
@@ -54,8 +52,6 @@ private:
     void take(auto& map, Quantity qty) noexcept;
 
     static void removeOrder(auto& map, RestingOrder& order) noexcept;
-
-    Ticker ticker_{};
 
     std::map<Price, PriceLevel> asks_;
     std::map<Price, PriceLevel, std::greater<>> bids_;

@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <chrono>
 
-MatchingEngine::MatchingEngine(Ticker ticker) noexcept : ticker_(ticker), order_book_(ticker) {}
+MatchingEngine::MatchingEngine(Ticker ticker) noexcept : ticker_(ticker) {}
 
 Ticker MatchingEngine::getTicker() const noexcept {
     return ticker_;
