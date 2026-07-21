@@ -44,6 +44,10 @@ std::vector<Trade> MatchingEngine::submit(const Order& order) noexcept {
     return trades;
 }
 
+bool MatchingEngine::cancel(OrderId id) noexcept {
+    return order_book_.cancel(id);
+}
+
 bool MatchingEngine::isMatch(const Order& aggressor, const OrderBook::Front& resting) noexcept {
     if (aggressor.getSide() == Side::BUY) {
         return resting.price <= aggressor.getPrice();

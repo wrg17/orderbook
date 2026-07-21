@@ -67,7 +67,7 @@ TEST(OrderBook, CancelRemovesBuyFromBook) {
     ASSERT_EQ(order_book.getBestBid(),
               (OrderBook::Front{kMatchPrice, kBuy.getQuantity(), kBuy.getId()}));
 
-    order_book.cancel(kBuy.getId());
+    EXPECT_EQ(order_book.cancel(kBuy.getId()), true);
 
     EXPECT_EQ(order_book.getBestBid(), std::nullopt);
 }
@@ -78,7 +78,7 @@ TEST(OrderBook, CancelRemovesSaleFromBook) {
     ASSERT_EQ(order_book.getBestAsk(),
               (OrderBook::Front{kMatchPrice, kSell.getQuantity(), kSell.getId()}));
 
-    order_book.cancel(kSell.getId());
+    EXPECT_EQ(order_book.cancel(kSell.getId()), true);
 
     EXPECT_EQ(order_book.getBestAsk(), std::nullopt);
 }
@@ -90,7 +90,7 @@ TEST(OrderBook, CancelUnknownIdIsNoOp) {
         .price = kMatchPrice, .quantity = kBuy.getQuantity(), .id = kBuy.getId()};
     ASSERT_EQ(order_book.getBestBid(), kExpected);
 
-    order_book.cancel(kUntracked.getId());
+    EXPECT_EQ(order_book.cancel(kUntracked.getId()), false);
 
     EXPECT_EQ(order_book.getBestBid(), kExpected);
 }

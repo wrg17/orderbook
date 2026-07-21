@@ -95,10 +95,10 @@ void OrderBook::add(OrderId id, Side side, Price price, Quantity quantity) noexc
     orders_.emplace(id, std::move(order_ptr));
 }
 
-void OrderBook::cancel(OrderId id) noexcept {
+bool OrderBook::cancel(OrderId id) noexcept {
     const auto kNode = orders_.extract(id);
     if (kNode.empty()) {
-        return;
+        return false;
     }
 
     std::unique_ptr<RestingOrder> order = std::move(kNode.mapped());
@@ -108,4 +108,5 @@ void OrderBook::cancel(OrderId id) noexcept {
     } else {
         removeOrder(asks_, *order);
     }
+    return true;
 }

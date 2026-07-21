@@ -24,6 +24,8 @@ public:
 
     [[nodiscard]] std::vector<Trade> submit(const Order& order) noexcept;
 
+    [[nodiscard]] bool cancel(OrderId id) noexcept;
+
 private:
     [[nodiscard]] static bool isMatch(const Order& aggressor,
                                       const OrderBook::Front& resting) noexcept;

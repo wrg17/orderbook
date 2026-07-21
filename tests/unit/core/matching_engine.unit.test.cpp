@@ -132,3 +132,23 @@ TEST(MatchingEngine, PartialFillRestsResidualQuantity) {
     ASSERT_EQ(kSecond.size(), 1U);
     EXPECT_EQ(kSecond[0].getQuantity(), Quantity{6});
 }
+
+TEST(MatchingEngine, CancelRemovesRestingOrder) {
+    MatchingEngine engine{kTicker};
+    const Order kResting{Side::SELL, Quantity{10}, kTicker, Price{100}};
+
+    EXPECT_TRUE(engine.submit(kResting).empty());
+    EXPECT_EQ(engine.cancel(kResting.getId()), true);
+
+    // The resting ask is gone: a crossing buy finds nothing to match.
+    const std::vector<Trade> kTrades =
+        engine.submit(Order{Side::BUY, Quantity{10}, kTicker, Price{100}});
+    EXPECT_TRUE(kTrades.empty());
+}
+
+TEST(MatchingEngine, CancelUnknownIdReturnsFalse) {
+    MatchingEngine engine{kTicker};
+    const Order kNeverSubmitted{Side::BUY, Quantity{10}, kTicker, Price{100}};
+
+    EXPECT_EQ(engine.cancel(kNeverSubmitted.getId()), false);
+}
