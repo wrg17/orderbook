@@ -5,6 +5,7 @@
 #include <orderbook/core/matching_engine.hpp>
 
 #include <algorithm>
+#include <cassert>
 #include <chrono>
 
 MatchingEngine::MatchingEngine(Ticker ticker) noexcept : ticker_(ticker) {}
@@ -14,6 +15,8 @@ Ticker MatchingEngine::getTicker() const noexcept {
 }
 
 std::vector<Trade> MatchingEngine::submit(const Order& order) noexcept {
+    assert(order.getTicker() == ticker_); // GCOVR_EXCL_BR_LINE
+
     std::vector<Trade> trades;
 
     const auto kGet =

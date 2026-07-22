@@ -152,3 +152,10 @@ TEST(MatchingEngine, CancelUnknownIdReturnsFalse) {
 
     EXPECT_EQ(engine.cancel(kNeverSubmitted.getId()), false);
 }
+
+#ifndef NDEBUG
+TEST(MatchingEngine, SubmitWrongTickerAborts) {
+    MatchingEngine engine{kTicker};
+    ASSERT_DEATH(engine.submit(Order{Side::BUY, Quantity{10}, Ticker{2}, Price{100}}), "");
+}
+#endif
