@@ -26,6 +26,8 @@ public:
 
     [[nodiscard]] bool cancel(OrderId id) noexcept;
 
+    [[nodiscard]] bool reduce(OrderId id, Quantity reduction) noexcept;
+
 private:
     [[nodiscard]] static bool isMatch(const Order& aggressor,
                                       const OrderBook::Front& resting) noexcept;

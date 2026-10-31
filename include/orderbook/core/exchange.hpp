@@ -31,6 +31,9 @@ public:
 
     [[nodiscard]] std::optional<bool> cancel(Ticker ticker, OrderId id) noexcept;
 
+    [[nodiscard]] std::optional<bool> reduce(Ticker ticker, OrderId id,
+                                             Quantity reduction) noexcept;
+
 private:
     std::map<Ticker, MatchingEngine> engines_;
 };

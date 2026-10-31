@@ -95,6 +95,38 @@ TEST(OrderBook, CancelUnknownIdIsNoOp) {
     EXPECT_EQ(order_book.getBestBid(), kExpected);
 }
 
+TEST(OrderBook, ReducePartialLowersRestingQuantity) {
+    OrderBook order_book{};
+    order_book.add(kBigBuy);
+
+    EXPECT_EQ(order_book.reduce(kBigBuy.getId(), kPartialQty), true);
+
+    EXPECT_EQ(order_book.getBestBid(), (OrderBook::Front{.price = kMatchPrice,
+                                                         .quantity = kBigQuantity - kPartialQty,
+                                                         .id = kBigBuy.getId()}));
+}
+
+TEST(OrderBook, ReduceToZeroRemovesOrder) {
+    OrderBook order_book{};
+    order_book.add(kBigBuy);
+
+    EXPECT_EQ(order_book.reduce(kBigBuy.getId(), kBigQuantity), true);
+
+    EXPECT_EQ(order_book.getBestBid(), std::nullopt);
+}
+
+TEST(OrderBook, ReduceUnknownIdIsNoOp) {
+    OrderBook order_book{};
+    order_book.add(kBigBuy);
+    const OrderBook::Front kExpected{
+        .price = kMatchPrice, .quantity = kBigQuantity, .id = kBigBuy.getId()};
+    ASSERT_EQ(order_book.getBestBid(), kExpected);
+
+    EXPECT_EQ(order_book.reduce(kUntracked.getId(), kPartialQty), false);
+
+    EXPECT_EQ(order_book.getBestBid(), kExpected);
+}
+
 TEST(OrderBook, TakeBestBidPartial) {
     OrderBook order_book{};
     order_book.add(kBigBuy);
@@ -165,5 +197,11 @@ TEST(OrderBook, TakeFailsWhenQuantityExceedsFront) {
     OrderBook order_book{};
     order_book.add(kBuy);
     ASSERT_DEATH(order_book.takeBestBid(kBigQuantity), "");
+}
+
+TEST(OrderBook, ReduceFailsWhenReductionExceedsQuantity) {
+    OrderBook order_book{};
+    order_book.add(kBuy);
+    ASSERT_DEATH(order_book.reduce(kBuy.getId(), kBigQuantity), "");
 }
 #endif

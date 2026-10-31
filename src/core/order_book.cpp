@@ -110,3 +110,23 @@ bool OrderBook::cancel(OrderId id) noexcept {
     }
     return true;
 }
+
+bool OrderBook::reduce(OrderId id, Quantity reduction) noexcept {
+    const auto kIt = orders_.find(id);
+    if (kIt == orders_.end()) {
+        return false;
+    }
+
+    RestingOrder& order = *kIt->second;
+
+    assert(reduction <= order.getQuantity()); // GCOVR_EXCL_BR_LINE
+
+    // A reduction down to zero is a removal, not a reduction — defer to cancel so the
+    // side dispatch and the orders_ erase live in exactly one place.
+    if (reduction == order.getQuantity()) {
+        return cancel(id);
+    }
+
+    order.reduce(reduction);
+    return true;
+}

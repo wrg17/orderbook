@@ -95,3 +95,30 @@ TEST(Exchange, CancelRoutesToBook) {
     ASSERT_TRUE(kResult.has_value());
     EXPECT_TRUE(kResult.value_or(std::vector<Trade>{}).empty());
 }
+
+TEST(Exchange, ReduceOnUnlistedTickerReturnsNullopt) {
+    Exchange exchange{};
+
+    EXPECT_EQ(exchange.reduce(kTicker, OrderId{1}, kQty), std::nullopt);
+}
+
+TEST(Exchange, ReduceRoutesToBook) {
+    constexpr Quantity kReduction{4};
+
+    Exchange exchange{};
+    exchange.list(kTicker);
+    const Order kResting{Side::SELL, kQty, kTicker, kPrice};
+    ASSERT_TRUE(exchange.submit(kResting).has_value());
+
+    const std::optional<bool> kReduced = exchange.reduce(kTicker, kResting.getId(), kReduction);
+    ASSERT_TRUE(kReduced.has_value());
+    EXPECT_TRUE(kReduced.value_or(false));
+
+    // Only the unreduced remainder is available to a crossing buy.
+    const std::optional<std::vector<Trade>> kResult =
+        exchange.submit(Order{Side::BUY, kQty, kTicker, kPrice});
+    ASSERT_TRUE(kResult.has_value());
+    const std::vector<Trade> kTrades = kResult.value_or(std::vector<Trade>{});
+    ASSERT_EQ(kTrades.size(), 1U);
+    EXPECT_EQ(kTrades[0].getQuantity(), kQty - kReduction);
+}

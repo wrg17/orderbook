@@ -153,6 +153,40 @@ TEST(MatchingEngine, CancelUnknownIdReturnsFalse) {
     EXPECT_EQ(engine.cancel(kNeverSubmitted.getId()), false);
 }
 
+TEST(MatchingEngine, ReduceLowersRestingQuantity) {
+    MatchingEngine engine{kTicker};
+    const Order kResting{Side::SELL, Quantity{10}, kTicker, Price{100}};
+
+    EXPECT_TRUE(engine.submit(kResting).empty());
+    EXPECT_EQ(engine.reduce(kResting.getId(), Quantity{4}), true);
+
+    // Only the remaining 6 is available to a crossing buy.
+    const std::vector<Trade> kTrades =
+        engine.submit(Order{Side::BUY, Quantity{10}, kTicker, Price{100}});
+    ASSERT_EQ(kTrades.size(), 1U);
+    EXPECT_EQ(kTrades[0].getQuantity(), Quantity{6});
+}
+
+TEST(MatchingEngine, ReduceToZeroRemovesRestingOrder) {
+    MatchingEngine engine{kTicker};
+    const Order kResting{Side::SELL, Quantity{10}, kTicker, Price{100}};
+
+    EXPECT_TRUE(engine.submit(kResting).empty());
+    EXPECT_EQ(engine.reduce(kResting.getId(), Quantity{10}), true);
+
+    // The resting ask is gone: a crossing buy finds nothing to match.
+    const std::vector<Trade> kTrades =
+        engine.submit(Order{Side::BUY, Quantity{10}, kTicker, Price{100}});
+    EXPECT_TRUE(kTrades.empty());
+}
+
+TEST(MatchingEngine, ReduceUnknownIdReturnsFalse) {
+    MatchingEngine engine{kTicker};
+    const Order kNeverSubmitted{Side::BUY, Quantity{10}, kTicker, Price{100}};
+
+    EXPECT_EQ(engine.reduce(kNeverSubmitted.getId(), Quantity{1}), false);
+}
+
 #ifndef NDEBUG
 TEST(MatchingEngine, SubmitWrongTickerAborts) {
     MatchingEngine engine{kTicker};

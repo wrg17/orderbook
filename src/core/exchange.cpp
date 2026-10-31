@@ -29,3 +29,11 @@ std::optional<bool> Exchange::cancel(Ticker ticker, OrderId id) noexcept {
     }
     return kIt->second.cancel(id);
 }
+
+std::optional<bool> Exchange::reduce(Ticker ticker, OrderId id, Quantity reduction) noexcept {
+    const auto kIt = engines_.find(ticker);
+    if (kIt == engines_.end()) {
+        return std::nullopt;
+    }
+    return kIt->second.reduce(id, reduction);
+}

@@ -38,6 +38,8 @@ public:
 
     bool cancel(OrderId id) noexcept;
 
+    bool reduce(OrderId id, Quantity reduction) noexcept;
+
     std::optional<Front> getBestBid() const noexcept;
 
     std::optional<Front> getBestAsk() const noexcept;

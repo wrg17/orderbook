@@ -51,6 +51,10 @@ bool MatchingEngine::cancel(OrderId id) noexcept {
     return order_book_.cancel(id);
 }
 
+bool MatchingEngine::reduce(OrderId id, Quantity reduction) noexcept {
+    return order_book_.reduce(id, reduction);
+}
+
 bool MatchingEngine::isMatch(const Order& aggressor, const OrderBook::Front& resting) noexcept {
     if (aggressor.getSide() == Side::BUY) {
         return resting.price <= aggressor.getPrice();
