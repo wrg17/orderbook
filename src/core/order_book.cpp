@@ -24,11 +24,15 @@ std::optional<OrderBook::Front> OrderBook::getBestBid() const noexcept {
 }
 
 void OrderBook::takeBestAsk(Quantity qty) noexcept {
-    take(asks_, qty);
+    assert(!asks_.empty()); // GCOVR_EXCL_BR_LINE
+
+    take(*asks_.begin()->second.getFront(), qty);
 }
 
 void OrderBook::takeBestBid(Quantity qty) noexcept {
-    take(bids_, qty);
+    assert(!bids_.empty()); // GCOVR_EXCL_BR_LINE
+
+    take(*bids_.begin()->second.getFront(), qty);
 }
 
 std::optional<OrderBook::Front> OrderBook::front(const auto& map) const noexcept {
@@ -47,7 +51,7 @@ std::optional<OrderBook::Front> OrderBook::front(const auto& map) const noexcept
         .price = kPrice, .quantity = kLevelFront->getQuantity(), .id = kLevelFront->getId()};
 }
 
-void OrderBook::removeOrder(auto& map, RestingOrder& order) noexcept {
+void OrderBook::removeFromLevel(auto& map, RestingOrder& order) noexcept {
     const PriceLevel* const kLevelPtr = order.getLevel();
 
     const Price kPrice = kLevelPtr->getPrice();
@@ -59,25 +63,27 @@ void OrderBook::removeOrder(auto& map, RestingOrder& order) noexcept {
     }
 }
 
-void OrderBook::take(auto& map, Quantity qty) noexcept {
-    assert(!map.empty()); // GCOVR_EXCL_BR_LINE
+void OrderBook::removeOrder(RestingOrder& order) noexcept {
+    const OrderId kId = order.getId();
 
-    auto it = map.begin();
+    if (order.getSide() == Side::BUY) {
+        removeFromLevel(bids_, order);
+    } else {
+        removeFromLevel(asks_, order);
+    }
 
-    const PriceLevel* const kLevel = &it->second;
+    orders_.erase(kId);
+}
 
-    RestingOrder* const kRestingPtr = kLevel->getFront();
-
-    const Quantity kRestingQty = kRestingPtr->getQuantity();
-    const OrderId kId = kRestingPtr->getId();
+void OrderBook::take(RestingOrder& order, Quantity qty) noexcept {
+    const Quantity kRestingQty = order.getQuantity();
 
     assert(kRestingQty >= qty); // GCOVR_EXCL_BR_LINE
 
-    kRestingPtr->reduce(qty);
+    order.reduce(qty);
 
     if (kRestingQty == qty) {
-        removeOrder(map, *kRestingPtr);
-        orders_.erase(kId);
+        removeOrder(order);
     }
 }
 
@@ -96,37 +102,21 @@ void OrderBook::add(OrderId id, Side side, Price price, Quantity quantity) noexc
 }
 
 bool OrderBook::cancel(OrderId id) noexcept {
-    const auto kNode = orders_.extract(id);
-    if (kNode.empty()) {
+    const auto kOrderIt = orders_.find(id);
+    if (kOrderIt == orders_.end()) {
         return false;
     }
 
-    std::unique_ptr<RestingOrder> order = std::move(kNode.mapped());
-
-    if (order->getSide() == Side::BUY) {
-        removeOrder(bids_, *order);
-    } else {
-        removeOrder(asks_, *order);
-    }
+    removeOrder(*kOrderIt->second);
     return true;
 }
 
 bool OrderBook::reduce(OrderId id, Quantity reduction) noexcept {
-    const auto kIt = orders_.find(id);
-    if (kIt == orders_.end()) {
+    const auto kOrderIt = orders_.find(id);
+    if (kOrderIt == orders_.end()) {
         return false;
     }
 
-    RestingOrder& order = *kIt->second;
-
-    assert(reduction <= order.getQuantity()); // GCOVR_EXCL_BR_LINE
-
-    // A reduction down to zero is a removal, not a reduction — defer to cancel so the
-    // side dispatch and the orders_ erase live in exactly one place.
-    if (reduction == order.getQuantity()) {
-        return cancel(id);
-    }
-
-    order.reduce(reduction);
+    take(*kOrderIt->second, reduction);
     return true;
 }

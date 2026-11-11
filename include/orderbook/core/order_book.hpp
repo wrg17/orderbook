@@ -51,9 +51,11 @@ public:
 private:
     std::optional<Front> front(const auto& map) const noexcept;
 
-    void take(auto& map, Quantity qty) noexcept;
+    static void removeFromLevel(auto& map, RestingOrder& order) noexcept;
 
-    static void removeOrder(auto& map, RestingOrder& order) noexcept;
+    void removeOrder(RestingOrder& order) noexcept;
+
+    void take(RestingOrder& order, Quantity qty) noexcept;
 
     std::map<Price, PriceLevel> asks_;
     std::map<Price, PriceLevel, std::greater<>> bids_;
