@@ -127,6 +127,19 @@ TEST(OrderBook, ReduceUnknownIdIsNoOp) {
     EXPECT_EQ(order_book.getBestBid(), kExpected);
 }
 
+TEST(OrderBook, ReduceBeyondRestingQuantityIsRejectedWholesale) {
+    OrderBook order_book{};
+    order_book.add(kBigBuy);
+    const OrderBook::Front kExpected{
+        .price = kMatchPrice, .quantity = kBigQuantity, .id = kBigBuy.getId()};
+    ASSERT_EQ(order_book.getBestBid(), kExpected);
+
+    EXPECT_EQ(order_book.reduce(kBigBuy.getId(), kBigQuantity + Quantity{1}), false);
+
+    // All-or-nothing: the order keeps its full quantity rather than being clamped away.
+    EXPECT_EQ(order_book.getBestBid(), kExpected);
+}
+
 TEST(OrderBook, TakeBestBidPartial) {
     OrderBook order_book{};
     order_book.add(kBigBuy);
@@ -199,9 +212,4 @@ TEST(OrderBook, TakeFailsWhenQuantityExceedsFront) {
     ASSERT_DEATH(order_book.takeBestBid(kBigQuantity), "");
 }
 
-TEST(OrderBook, ReduceFailsWhenReductionExceedsQuantity) {
-    OrderBook order_book{};
-    order_book.add(kBuy);
-    ASSERT_DEATH(order_book.reduce(kBuy.getId(), kBigQuantity), "");
-}
 #endif

@@ -180,6 +180,20 @@ TEST(MatchingEngine, ReduceToZeroRemovesRestingOrder) {
     EXPECT_TRUE(kTrades.empty());
 }
 
+TEST(MatchingEngine, ReduceBeyondRestingQuantityReturnsFalseAndLeavesOrderIntact) {
+    MatchingEngine engine{kTicker};
+    const Order kResting{Side::SELL, Quantity{10}, kTicker, Price{100}};
+
+    EXPECT_TRUE(engine.submit(kResting).empty());
+    EXPECT_EQ(engine.reduce(kResting.getId(), Quantity{11}), false);
+
+    // The rejected reduce changed nothing: the full 10 is still available to cross.
+    const std::vector<Trade> kTrades =
+        engine.submit(Order{Side::BUY, Quantity{10}, kTicker, Price{100}});
+    ASSERT_EQ(kTrades.size(), 1U);
+    EXPECT_EQ(kTrades[0].getQuantity(), Quantity{10});
+}
+
 TEST(MatchingEngine, ReduceUnknownIdReturnsFalse) {
     MatchingEngine engine{kTicker};
     const Order kNeverSubmitted{Side::BUY, Quantity{10}, kTicker, Price{100}};

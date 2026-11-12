@@ -117,6 +117,12 @@ bool OrderBook::reduce(OrderId id, Quantity reduction) noexcept {
         return false;
     }
 
-    take(*kOrderIt->second, reduction);
+    RestingOrder& order = *kOrderIt->second;
+
+    if (reduction > order.getQuantity()) {
+        return false;
+    }
+
+    take(order, reduction);
     return true;
 }
