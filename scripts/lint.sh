@@ -12,6 +12,6 @@ if [[ $SKIP_CONFIGURE -eq 0 ]]; then
   cmake --preset ci
 fi
 
-find src apps tests \
+find src apps tests bench \
   -type f \( -name '*.cpp' -o -name '*.hpp' \) \
   -print0 | xargs -0 -P "$(nproc)" -n 1 clang-tidy -p build/ci --warnings-as-errors='*'

@@ -19,10 +19,10 @@ fi
 
 CHANGED=$({
   if [[ -n "$BASE_REF" ]]; then
-    git diff --name-only "$BASE_REF" HEAD -- 'src' 'apps' 'tests'
+    git diff --name-only "$BASE_REF" HEAD -- 'src' 'apps' 'tests' 'bench'
   fi
-  git diff --name-only HEAD -- 'src' 'apps' 'tests'
-  git ls-files --others --exclude-standard -- 'src' 'apps' 'tests'
+  git diff --name-only HEAD -- 'src' 'apps' 'tests' 'bench'
+  git ls-files --others --exclude-standard -- 'src' 'apps' 'tests' 'bench'
 } | grep -E '\.cpp$' || true)
 
 CHANGED=$(echo "$CHANGED" | sort -u | grep -v '^$' || true)

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-files=$(find src include apps tests \
+files=$(find src include apps tests bench \
   -type f \( -name '*.cpp' -o -name '*.hpp' \))
 
 count=$(echo "$files" | wc -l | tr -d ' ')

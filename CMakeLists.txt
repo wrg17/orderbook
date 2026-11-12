@@ -69,3 +69,5 @@ if (ORDERBOOK_BUILD_TESTS)
     #gtest_discover_tests(orderbook_integration_tests)
     gtest_discover_tests(orderbook_unit_tests)
 endif ()
+
+add_subdirectory(bench)

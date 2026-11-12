@@ -12,7 +12,7 @@ Checks: >
   -cppcoreguidelines-avoid-magic-numbers
 
 WarningsAsErrors: ''
-HeaderFilterRegex: '^(include|src|apps)/'
+HeaderFilterRegex: '^(include|src|apps|bench)/'
 FormatStyle: file
 
 CheckOptions:

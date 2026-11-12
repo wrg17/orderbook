@@ -22,6 +22,8 @@ gcovr \
   --root . \
   --filter 'src/' \
   --filter 'include/' \
+  --filter 'bench/' \
+  --exclude 'bench/tests/' \
   --exclude-throw-branches \
   --html-details build/coverage/html/index.html \
   --print-summary \

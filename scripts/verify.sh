@@ -14,7 +14,7 @@ CACHE_FILE="$REPO_ROOT/.cache/last-verified-hash"
 compute_hash() {
   cd "$REPO_ROOT"
   git ls-files --cached --others --exclude-standard -- \
-    src include tests apps scripts \
+    src include tests apps bench scripts \
     CMakeLists.txt CMakePresets.json .clang-tidy .clang-format \
     vcpkg.json Makefile docker-compose.yml docker \
     | sort \
